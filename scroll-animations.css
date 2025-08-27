@@ -1,0 +1,137 @@
+/* ===== ANIMACIONES DE SCROLL ===== */
+
+/* Clase base para elementos que se animarán */
+.scroll-animate {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease-out;
+}
+
+/* Elementos que aparecen desde abajo */
+.scroll-animate.fade-in-up {
+    transform: translateY(30px);
+}
+
+/* Elementos que aparecen desde la izquierda */
+.scroll-animate.fade-in-left {
+    transform: translateX(-30px);
+}
+
+/* Elementos que aparecen desde la derecha */
+.scroll-animate.fade-in-right {
+    transform: translateX(30px);
+}
+
+/* Elementos que aparecen con zoom */
+.scroll-animate.fade-in-zoom {
+    transform: scale(0.8);
+}
+
+/* Elementos que aparecen con rotación */
+.scroll-animate.fade-in-rotate {
+    transform: rotate(-5deg) scale(0.9);
+}
+
+/* Estado activo cuando el elemento es visible */
+.scroll-animate.animate-active {
+    opacity: 1;
+    transform: translateY(0) translateX(0) scale(1) rotate(0deg);
+}
+
+/* Diferentes velocidades de animación */
+.scroll-animate.slow {
+    transition-duration: 0.8s;
+}
+
+.scroll-animate.fast {
+    transition-duration: 0.4s;
+}
+
+/* Delays para crear efectos escalonados */
+.scroll-animate.delay-1 {
+    transition-delay: 0.1s;
+}
+
+.scroll-animate.delay-2 {
+    transition-delay: 0.2s;
+}
+
+.scroll-animate.delay-3 {
+    transition-delay: 0.3s;
+}
+
+.scroll-animate.delay-4 {
+    transition-delay: 0.4s;
+}
+
+/* Animaciones específicas para diferentes secciones */
+.nosotros-section .mvv-panel {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.7s ease-out;
+}
+
+.nosotros-section .mvv-panel.animate-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.products-section .product-card-minimal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.6s ease-out;
+}
+
+.products-section .product-card-minimal.animate-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.podcast-section .podcast-card {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.6s ease-out;
+}
+
+.podcast-section .podcast-card.animate-active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Animaciones para elementos del hero */
+.hero-content .titulo,
+.hero-content .titulo-descripcion {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease-out;
+}
+
+.hero-content .titulo.animate-active,
+.hero-content .titulo-descripcion.animate-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive para móvil */
+@media screen and (max-width: 768px) {
+    .scroll-animate {
+        transform: translateY(20px);
+        transition-duration: 0.5s;
+    }
+    
+    .scroll-animate.fade-in-left,
+    .scroll-animate.fade-in-right {
+        transform: translateY(20px);
+    }
+    
+    .scroll-animate.animate-active {
+        transform: translateY(0);
+    }
+}
+
+/* Optimizaciones para rendimiento */
+.scroll-animate {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}

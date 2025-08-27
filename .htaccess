@@ -1,0 +1,17 @@
+RewriteEngine On
+
+# Asegurar que las rutas funcionen correctamente
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirigir /capitanfinanciero/success.html a /success.html
+RewriteRule ^capitanfinanciero/success\.html$ /success.html [R=301,L]
+
+# Configurar índices por defecto
+DirectoryIndex index.html index.php
+
+# Configurar tipos MIME
+AddType text/html .html
+AddType application/javascript .js
+AddType text/css .css
+

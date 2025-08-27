@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista Previa del Correo - Capitán Financiero</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #222F58;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            margin: 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+        }
+        
+        .content h2 {
+            color: #222F58;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        .order-details {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #222F58;
+        }
+        
+        .order-details h3 {
+            color: #222F58;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .highlight {
+            color: #222F58;
+            font-weight: bold;
+        }
+        
+        .order-details ul, .order-details ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .order-details li {
+            margin-bottom: 8px;
+        }
+        
+        .whatsapp-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 6px;
+            text-align: center;
+            border-left: 4px solid #222F58;
+        }
+        
+        .whatsapp-section h3 {
+            color: #222F58;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .whatsapp-section p {
+            margin-bottom: 18px;
+            font-size: 15px;
+            color: #555;
+            line-height: 1.4;
+        }
+        
+        .whatsapp-button {
+            background: #25D366;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .whatsapp-button:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+        
+        .footer {
+            background: #222F58;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .preview-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .preview-info h3 {
+            color: #1976d2;
+            margin: 0 0 10px 0;
+        }
+        
+        .preview-info p {
+            margin: 5px 0;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-info">
+        <h3>📧 Vista Previa del Correo de Confirmación</h3>
+        <p><strong>Asunto:</strong> ¡Confirmación de Compra - Capitán Financiero!</p>
+        <p><strong>Destinatario:</strong> Cliente + CC a administración</p>
+        <p><strong>Diseño:</strong> Responsive y compatible con todos los clientes de correo</p>
+    </div>
+
+    <div class="email-container">
+        <div class="header">
+            <h1>¡Gracias por tu Compra!</h1>
+            <p>Tu orden ha sido confirmada exitosamente</p>
+        </div>
+        
+        <div class="content">
+            <h2>Hola Juan Pérez,</h2>
+            
+            <p>Nos complace confirmar que tu compra ha sido procesada exitosamente. A continuación encontrarás los detalles de tu orden:</p>
+            
+            <div class="order-details">
+                <h3>📋 Detalles de la Orden</h3>
+                <p><strong>Número de Orden:</strong> <span class="highlight">CF_20241201_0001</span></p>
+                <p><strong>Fecha de Compra:</strong> 01/12/2024 15:30</p>
+                <p><strong>Total Pagado:</strong> <span class="highlight">$1,999.00 MXN</span></p>
+                <p><strong>Método de Pago:</strong> Tarjeta de Crédito</p>
+            </div>
+            
+            <div class="order-details">
+                <h3>🎓 Programa Incluido</h3>
+                <p><strong>Programa de "Alineación Financiera I"</strong></p>
+                <ul>
+                    <li>6 cursos impartidos por expertos</li>
+                    <li>Diploma incluido</li>
+                    <li>Material por cada curso</li>
+                    <li>Acceso a la comunidad de Capitán Financiero</li>
+                </ul>
+            </div>
+            
+            <div class="order-details">
+                <h3>📚 Temario del Programa</h3>
+                <ol>
+                    <li>Mitos de la inversión</li>
+                    <li>¿Cómo salir de deudas?</li>
+                    <li>Abundancia y pensamiento holístico</li>
+                    <li>¿Por qué administrarme?</li>
+                    <li>¿Cómo me preparo para invertir?</li>
+                    <li>Bienes Raíces</li>
+                </ol>
+            </div>
+            
+            <p><strong>Próximos pasos:</strong></p>
+            <ul>
+                <li>Serás agregado al grupo de WhatsApp de la comunidad</li>
+                <li>Podrás comenzar tu programa de alineación financiera I según te comunique el equipo de Capitán Financiero</li>
+            </ul>
+            
+            <div class="whatsapp-section">
+                <h3>🎓 Únete a Nuestra Comunidad</h3>
+                <p>01/09 Alineación Financiera 1 - Capitán Financiero</p>
+                <a href="https://chat.whatsapp.com/IqTLB3D9kW1AF3TkhFJAFz" class="whatsapp-button">
+                    📱 Unirse al Grupo
+                </a>
+            </div>
+            
+            <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
+            
+            <p>¡Bienvenido a tu nueva vida financiera!</p>
+            
+            <p>Saludos,<br>
+            <strong>El equipo de Capitán Financiero</strong></p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2024 Capitán Financiero. Todos los derechos reservados.</p>
+            <p>Este es un correo automático, por favor no respondas a esta dirección.</p>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 20px; color: #666;">
+        <p><strong>Nota:</strong> Esta es solo una vista previa. El correo real se enviará automáticamente cuando se complete una compra.</p>
+        <p>El enlace de WhatsApp abrirá directamente la aplicación cuando se haga clic.</p>
+    </div>
+</body>
+</html>

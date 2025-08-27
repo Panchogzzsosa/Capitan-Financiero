@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregando al Carrito - Capitán Financiero</title>
+    <link rel="shortcut icon" href="Img/Logo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 500px;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(34, 47, 88, 0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .logo {
+            width: 100px;
+            height: auto;
+            margin: 0 auto 2rem;
+            display: block;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #e9ecef;
+            border-top: 3px solid #222F58;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .product-info {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #222F58;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            color: #155724;
+        }
+
+        .success-message .title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-message .subtitle {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .success-message .redirect-info {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            color: #721c24;
+        }
+
+        .debug-info {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.85rem;
+            text-align: left;
+            color: #495057;
+        }
+
+        .debug-info strong {
+            color: #222F58;
+        }
+
+        .debug-info code {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 4px;
+            display: block;
+            margin: 0.5rem 0;
+            border: 1px solid #dee2e6;
+            word-break: break-all;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .container {
+                max-width: 90%;
+                padding: 2rem 1.5rem;
+            }
+
+            .logo {
+                width: 80px;
+            }
+
+            .product-info {
+                padding: 1.2rem;
+            }
+
+            .product-name {
+                font-size: 1rem;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .logo {
+                width: 70px;
+            }
+
+            .product-name {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="Img/Logo.png" alt="Capitán Financiero" class="logo">
+        
+        <div id="loading-section">
+            <div class="loading-spinner"></div>
+            <div class="status-message">
+                Procesando tu solicitud...
+            </div>
+        </div>
+
+        <div id="product-section" style="display: none;">
+            <div class="product-info">
+                <div class="product-name" id="product-name"></div>
+                <div class="product-price" id="product-price"></div>
+            </div>
+        </div>
+
+        <div id="success-section" style="display: none;">
+            <div class="success-message">
+                <div class="title">✓ Producto agregado exitosamente</div>
+                <div class="subtitle">Tu producto está listo para la compra</div>
+                <div class="redirect-info">Redirigiendo al checkout en 2 segundos...</div>
+            </div>
+        </div>
+
+        <div id="error-section" style="display: none;">
+            <div class="error-message">
+                Error al procesar la solicitud
+            </div>
+            <div id="debug-info" class="debug-info">
+                <strong>Información de Debug:</strong><br>
+                <div id="debug-details"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ocultar sección de loading
+            document.getElementById('loading-section').style.display = 'none';
+            
+            // Obtener parámetros de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const addToCart = urlParams.get('add_to_cart');
+            const productId = urlParams.get('product_id');
+            const productName = urlParams.get('product_name');
+            const productPrice = urlParams.get('product_price');
+
+            console.log('Parámetros recibidos:', { addToCart, productId, productName, productPrice });
+
+            // Verificar que todos los parámetros estén presentes
+            if (addToCart === '1' && productId && productName && productPrice) {
+                // Decodificar el nombre del producto
+                const decodedName = decodeURIComponent(productName);
+                const price = parseInt(productPrice);
+                
+                // Mostrar información del producto
+                document.getElementById('product-name').textContent = decodedName;
+                document.getElementById('product-price').textContent = `$${price.toLocaleString()} MXN`;
+                document.getElementById('product-section').style.display = 'block';
+
+                // Simular proceso de agregar al carrito
+                setTimeout(() => {
+                    // Guardar en localStorage (simulando el carrito)
+                    const cartItem = {
+                        id: parseInt(productId),
+                        name: decodedName,
+                        price: price,
+                        quantity: 1,
+                        addedViaQR: true
+                    };
+
+                    // Obtener carrito existente o crear uno nuevo
+                    let cart = JSON.parse(localStorage.getItem('capitanFinancieroCart') || '[]');
+                    
+                    // Verificar si el producto ya existe en el carrito
+                    const existingItemIndex = cart.findIndex(item => item.id === cartItem.id);
+                    
+                    if (existingItemIndex !== -1) {
+                        // Incrementar cantidad si ya existe
+                        cart[existingItemIndex].quantity += 1;
+                    } else {
+                        // Agregar nuevo producto
+                        cart.push(cartItem);
+                    }
+
+                    // Guardar en localStorage
+                    localStorage.setItem('capitanFinancieroCart', JSON.stringify(cart));
+                    
+                    console.log('Producto agregado al carrito:', cartItem);
+                    console.log('Carrito completo:', cart);
+
+                    // Mostrar mensaje de éxito
+                    document.getElementById('success-section').style.display = 'block';
+                    
+                    // Redirigir automáticamente al checkout después de 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'checkout.html';
+                    }, 2000);
+
+                }, 1500);
+
+            } else {
+                // Mostrar error si faltan parámetros
+                console.error('Parámetros incompletos o incorrectos');
+                
+                // Mostrar información de debug
+                const debugDetails = document.getElementById('debug-details');
+                debugDetails.innerHTML = `
+                    URL completa: ${window.location.href}<br>
+                    Parámetros encontrados:<br>
+                    - add_to_cart: ${addToCart || 'NO ENCONTRADO'}<br>
+                    - product_id: ${productId || 'NO ENCONTRADO'}<br>
+                    - product_name: ${productName || 'NO ENCONTRADO'}<br>
+                    - product_price: ${productPrice || 'NO ENCONTRADO'}<br>
+                    <br>
+                    <strong>Para probar, usa esta URL:</strong><br>
+                    <code style="background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 4px; display: block; margin: 0.5rem 0;">
+                        ${window.location.origin}${window.location.pathname}?add_to_cart=1&product_id=1&product_name=Programa%20de%20%22Alineaci%C3%B3n%20Financiera%20I%22&product_price=1499
+                    </code>
+                `;
+                
+                document.getElementById('error-section').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Capitán Financiero</title>
+    <link rel="shortcut icon" href="Img/Logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: white;
+            margin: 0;
+            padding: 4rem 2rem;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .checkout-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            gap: 4rem;
+            padding: 2rem 0;
+        }
+
+        .order-summary {
+            flex: 1;
+        }
+
+        .summary-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .summary-header h2 {
+            color: #222F58;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            background: #222F58;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .product-details h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 500;
+        }
+
+        .product-price {
+            color: #222F58;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .product-meta {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .order-totals {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            font-size: 1rem;
+        }
+
+        .total-row.final {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #222F58;
+            border-top: 1px solid #e9ecef;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+
+        .contact-form {
+            flex: 1;
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-header h2 {
+            color: #222F58;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: #495057;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #222F58;
+            box-shadow: 0 0 0 3px rgba(34, 47, 88, 0.1);
+        }
+
+        .privacy-notice {
+            margin: 2.5rem 0;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .privacy-notice a {
+            color: #222F58;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .payment-options {
+            margin-top: 2.5rem;
+        }
+
+        .payment-option {
+            width: 100%;
+            padding: 18px 20px;
+            margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .payment-option:hover {
+            border-color: #222F58;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 47, 88, 0.15);
+        }
+
+        .payment-option.stripe {
+            background: #222F58;
+            color: white;
+            border-color: #222F58;
+        }
+
+        .payment-option.stripe:hover {
+            background: #1a2338;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 47, 88, 0.3);
+        }
+
+        .payment-option.card {
+            background: #f8f9fa;
+            color: #495057;
+        }
+
+        .payment-option.card:hover {
+            background: #e9ecef;
+        }
+
+        .stripe-powered {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .payment-buttons {
+            margin-top: 2rem;
+        }
+        
+        .payment-button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.5s ease; /* Transición más suave */
+            margin-bottom: 1rem;
+            opacity: 1; /* Para la transición */
+            transform: translateY(0); /* Para la transición */
+        }
+        
+        .stripe-button {
+            background: #222F58;
+            color: white;
+        }
+        
+        .stripe-button:hover {
+            background: #1a233f;
+            transform: translateY(-2px);
+        }
+        
+        .card-button {
+            background: #28a745;
+            color: white;
+            margin-top: 2rem; /* Más espacio por defecto */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .card-button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .card-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stripe-button.hide {
+            opacity: 0;
+            transform: scale(0.9) translateY(-10px);
+            pointer-events: none;
+        }
+        
+        .card-button.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stripe-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #222F58; /* Color principal de la marca */
+            pointer-events: none;
+        }
+        
+        .stripe-button.disabled:hover {
+            background: #222F58;
+            transform: none;
+        }
+
+        .stripe-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #222F58;
+            pointer-events: none;
+        }
+        
+        .stripe-button:disabled:hover {
+            background: #222F58;
+            transform: none;
+        }
+
+        /* Estilos para el selector de teléfono */
+        .iti {
+            width: 100%;
+        }
+
+        .iti__flag-container {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .iti__selected-flag {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .iti__selected-flag:hover {
+            background-color: #e9ecef;
+        }
+
+        .iti__country-list {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .iti__country {
+            padding: 8px 12px;
+        }
+
+        .iti__country:hover {
+            background-color: #f8f9fa;
+        }
+
+        .iti__country.iti__active {
+            background-color: #222F58;
+            color: white;
+        }
+
+        .iti__country.iti__active .iti__dial-code {
+            color: white;
+        }
+
+        .iti__dial-code {
+            color: #6c757d;
+        }
+
+        .iti__country-name {
+            color: #333;
+        }
+
+        .iti__flag {
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 3rem 1.5rem;
+            }
+            
+            .checkout-container {
+                flex-direction: column;
+                gap: 3rem;
+                padding: 1.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <!-- Resumen del Pedido -->
+        <div class="order-summary">
+            <div class="summary-header">
+                <h2>Resumen del Pedido</h2>
+            </div>
+
+                            <div class="product-item">
+                    <div class="product-image">
+                        <img src="Img/Logo.png" alt="Capitán Financiero" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 12px rgba(34, 47, 88, 0.15);">
+                    </div>
+                    <div class="product-details">
+                        <h3>Programa de "Alineación Financiera I"</h3>
+                        <div class="product-price">$4,650.00 MXN</div>
+                        <div class="product-meta">Cantidad: 1</div>
+                    <div class="product-benefits" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #f8f9fa;">
+                        <div style="color: #4E5979; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Incluye:</div>
+                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #6c757d; line-height: 1.4;">
+                            <li style="margin-bottom: 0.25rem;">• 6 cursos impartidos por expertos</li>
+                            <li style="margin-bottom: 0.25rem;">• Diploma incluido</li>
+                            <li style="margin-bottom: 0.25rem;">• Material por cada curso</li>
+                            <li style="margin-bottom: 0.25rem;">• Acceso a la comunidad de Capitán Financiero</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="product-curriculum" style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #f8f9fa;">
+                        <div style="color: #4E5979; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Temario:</div>
+                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #6c757d; line-height: 1.4;">
+                            <li style="margin-bottom: 0.25rem;">1. Mitos de la inversión</li>
+                            <li style="margin-bottom: 0.25rem;">2. ¿Cómo salir de deudas?</li>
+                            <li style="margin-bottom: 0.25rem;">3. Abundancia y pensamiento holístico </li>
+                            <li style="margin-bottom: 0.25rem;">4. ¿Por qué administrarme?</li>
+                            <li style="margin-bottom: 0.25rem;">5. ¿Cómo me preparo para invertir?</li>
+                            <li style="margin-bottom: 0.25rem;">6. Bienes Raíces</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-totals">
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">$4,650.00 MXN</span>
+                </div>
+                <div class="total-row">
+                    <span>Descuento Promocional:</span>
+                    <span style="color: #dc3545; font-weight: 600;">-$3,151.00 MXN</span>
+                </div>
+                <div class="promotion-notice" style="text-align: center; margin: 1rem 0; padding: 1.2rem; background: #f8f9fa; border: 2px solid #222F58; border-radius: 12px; box-shadow: 0 2px 10px rgba(34, 47, 88, 0.08);">
+                    <div style="color: #222F58; font-weight: 700; font-size: 1.1rem; font-family: 'Georgia', serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem;"> Promoción Especial</div>
+                    <div style="color: #6c757d; font-size: 0.85rem; font-family: 'Arial', sans-serif;">Válida hasta el 30 de agosto 2025</div>
+                </div>
+                <div class="total-row final">
+                    <span>Total:</span>
+                    <span id="total">$1,499.00 MXN</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Contacto -->
+        <div class="contact-form">
+            <div class="form-header">
+                <h2>Información de Contacto</h2>
+            </div>
+
+            <form id="checkout-form">
+                <!-- Campos ocultos para rastreo de tráfico -->
+                <input type="hidden" id="utm_source" name="utm_source">
+                <input type="hidden" id="utm_medium" name="utm_medium">
+                <input type="hidden" id="utm_campaign" name="utm_campaign">
+                <input type="hidden" id="utm_content" name="utm_content">
+                <input type="hidden" id="utm_term" name="utm_term">
+                <input type="hidden" id="referrer" name="referrer">
+                <input type="hidden" id="landing_page" name="landing_page">
+                
+                <div class="form-group">
+                    <label for="name">Nombre Completo</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Teléfono</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Dirección de Facturación</label>
+                    <textarea id="address" name="address" rows="3" placeholder="Calle, número, colonia, ciudad, estado, código postal"></textarea>
+                </div>
+
+                <div class="privacy-notice">
+                    Al comprar acepto el <a href="aviso-privacidad.html" target="_blank">Aviso de privacidad</a> de Capitán Financiero
+                </div>
+
+                <!-- Botones de pago -->
+                <div class="payment-buttons">
+                    <button type="button" id="stripe-button" class="payment-button stripe-button">
+                        <i class="fab fa-stripe"></i>
+                        <span>Pagar con Stripe</span>
+                    </button>
+                    
+                    <!-- El botón de tarjeta se mostrará dinámicamente -->
+                    <button type="button" id="card-button" class="payment-button card-button" style="display: none;">
+                        <i class="fas fa-lock"></i>
+                        <span>Confirmar Pago</span>
+                    </button>
+                </div>
+
+                <div class="stripe-powered">
+                    Desarrollado por Stripe
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="checkout.js"></script>
+    
+    <script>
+        // Variable global para el selector de teléfono
+        let globalIti;
+        
+        // Función para capturar UTM parameters de la URL
+        function captureUTMParameters() {
+            console.log('Search params:', window.location.search);
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrer = document.referrer;
+            const currentPage = window.location.href;
+            
+            console.log('URL Search Params:', urlParams);
+            console.log('Referrer:', referrer);
+            console.log('Current Page:', currentPage);
+            
+            // Capturar UTM parameters desde URL primero
+            let utm_source = urlParams.get('utm_source') || '';
+            let utm_medium = urlParams.get('utm_medium') || '';
+            let utm_campaign = urlParams.get('utm_campaign') || '';
+            let utm_content = urlParams.get('utm_content') || '';
+            let utm_term = urlParams.get('utm_term') || '';
+            
+            // Si no hay UTM en la URL, intentar obtenerlos del localStorage
+            if (!utm_source && !utm_medium && !utm_campaign) {
+                const storedUTM = localStorage.getItem('capitanFinancieroUTM');
+                if (storedUTM) {
+                    try {
+                        const utmData = JSON.parse(storedUTM);
+                        console.log('📱 UTM parameters encontrados en localStorage:', utmData);
+                        
+                        // Usar los valores del localStorage si no están en la URL
+                        utm_source = utm_source || utmData.utm_source || '';
+                        utm_medium = utm_medium || utmData.utm_medium || '';
+                        utm_campaign = utm_campaign || utmData.utm_campaign || '';
+                        utm_content = utm_content || utmData.utm_content || '';
+                        utm_term = utm_term || utmData.utm_term || '';
+                        
+                        console.log('🔄 UTM parameters combinados (URL + localStorage):', {
+                            utm_source,
+                            utm_medium,
+                            utm_campaign,
+                            utm_content,
+                            utm_term
+                        });
+                    } catch (error) {
+                        console.error('Error al parsear UTM del localStorage:', error);
+                    }
+                }
+            }
+            
+            console.log('UTM Parameters finales:', {
+                utm_source,
+                utm_medium,
+                utm_campaign,
+                utm_content,
+                utm_term
+            });
+            
+            // Asignar valores a los campos ocultos
+            document.getElementById('utm_source').value = utm_source;
+            document.getElementById('utm_medium').value = utm_medium;
+            document.getElementById('utm_campaign').value = utm_campaign;
+            document.getElementById('utm_content').value = utm_content;
+            document.getElementById('utm_term').value = utm_term;
+            document.getElementById('referrer').value = referrer;
+            document.getElementById('landing_page').value = currentPage;
+            
+            // Guardar UTM parameters en localStorage para que estén disponibles después de la redirección
+            const utmData = {
+                utm_source,
+                utm_medium,
+                utm_campaign,
+                utm_content,
+                utm_term,
+                referrer,
+                landing_page: currentPage
+            };
+            localStorage.setItem('capitanFinancieroUTM', JSON.stringify(utmData));
+            console.log('💾 UTM parameters guardados en localStorage:', utmData);
+            
+            // Registrar la visita UTM si no se ha registrado antes
+            if (utm_source || utm_medium || utm_campaign) {
+                registerUTMVisitIfNeeded(utmData);
+            }
+            
+            console.log('✅ Campos ocultos actualizados:');
+            console.log('utm_source field:', document.getElementById('utm_source').value);
+            console.log('utm_medium field:', document.getElementById('utm_medium').value);
+            console.log('utm_campaign field:', document.getElementById('utm_campaign').value);
+            console.log('utm_content field:', document.getElementById('utm_content').value);
+            console.log('utm_term field:', document.getElementById('utm_term').value);
+            console.log('referrer field:', document.getElementById('referrer').value);
+            console.log('landing_page field:', document.getElementById('landing_page').value);
+        }
+        
+        // Inicializar el selector de teléfono
+        document.addEventListener('DOMContentLoaded', function() {
+            // Capturar UTM parameters al cargar la página
+            captureUTMParameters();
+            
+            const phoneInput = document.getElementById('phone');
+            
+            // Inicializar intl-tel-input
+            globalIti = window.intlTelInput(phoneInput, {
+                initialCountry: 'mx', // México por defecto
+                preferredCountries: ['mx', 'us', 'ca', 'es'], // Países preferidos
+                separateDialCode: true, // Mostrar código de país separado
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                formatOnDisplay: true,
+                autoHideDialCode: false,
+                autoPlaceholder: 'polite'
+            });
+            
+            // Actualizar el placeholder con el código de país
+            phoneInput.placeholder = globalIti.getSelectedCountryData().dialCode;
+            
+            // Actualizar placeholder cuando cambie el país
+            phoneInput.addEventListener('countrychange', function() {
+                const countryData = globalIti.getSelectedCountryData();
+                phoneInput.placeholder = countryData.dialCode;
+            });
+            
+            console.log('intl-tel-input inicializado:', globalIti);
+        });
+        
+        // Función global para obtener el número completo
+        function getFullPhoneNumber() {
+            if (globalIti) {
+                const fullNumber = globalIti.getNumber();
+                console.log('Número obtenido con intl-tel-input:', fullNumber);
+                return fullNumber;
+            } else {
+                console.log('intl-tel-input no está disponible');
+                return document.getElementById('phone').value;
+            }
+        }
+        
+        // Función para registrar la visita UTM si no se ha registrado antes
+        function registerUTMVisitIfNeeded(utmData) {
+            // Crear una clave única para esta visita UTM
+            const visitKey = `utm_visit_${utmData.utm_source}_${utmData.utm_medium}_${utmData.utm_campaign}`;
+            
+            // Verificar si ya se registró esta visita
+            if (localStorage.getItem(visitKey)) {
+                console.log('🔄 Visita UTM ya registrada anteriormente');
+                return;
+            }
+            
+            // Verificar si ya se registró en la página anterior
+            const storedUTM = localStorage.getItem('capitanFinancieroUTM');
+            if (storedUTM) {
+                try {
+                    const storedData = JSON.parse(storedUTM);
+                    // Si los parámetros UTM son idénticos, no registrar duplicado
+                    if (storedData.utm_source === utmData.utm_source && 
+                        storedData.utm_medium === utmData.utm_medium && 
+                        storedData.utm_campaign === utmData.utm_campaign) {
+                        console.log('🔄 Visita UTM ya registrada en página anterior, saltando...');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error al verificar UTM almacenado:', error);
+                }
+            }
+            
+            const params = new URLSearchParams({
+                utm_source: utmData.utm_source,
+                utm_medium: utmData.utm_medium,
+                utm_campaign: utmData.utm_campaign,
+                utm_content: utmData.utm_content,
+                utm_term: utmData.utm_term,
+                landing_page: utmData.landing_page
+            });
+            
+            // Hacer petición al servidor para registrar la visita
+            fetch('track_visit.php?' + params.toString(), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ Visita UTM registrada exitosamente desde checkout:', data);
+                    // Marcar como registrada para evitar duplicados
+                    localStorage.setItem(visitKey, 'true');
+                } else {
+                    console.warn('⚠️ Error al registrar visita UTM desde checkout:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error al registrar visita UTM desde checkout:', error);
+            });
+        }
+    </script>
+    
+</body>
+</html> 

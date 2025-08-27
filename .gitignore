@@ -1,0 +1,33 @@
+# Archivos de configuración con claves secretas
+config.php
+stripe_config.php
+process_order.php
+brevo_config.php
+
+# Archivos de entorno
+.env
+.env.local
+.env.production
+
+# Archivos de base de datos
+*.sql
+
+# Archivos de log
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Directorios de dependencias
+vendor/

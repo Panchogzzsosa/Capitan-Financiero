@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Pago Exitoso! - Capitán Financiero</title>
+    <link rel="shortcut icon" href="Img/Logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            color: #333;
+            line-height: 1.6;
+            padding: 4rem 2rem;
+            min-height: 100vh;
+        }
+        
+        .success-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #28a745;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 4px 20px rgba(40, 167, 69, 0.3);
+        }
+        
+        .success-title {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .success-message {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+        
+        .payment-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            text-align: left;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .detail-value {
+            color: #223058;
+            font-weight: 500;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: #223058;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1a253f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(34, 48, 88, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #223058;
+            animation: confetti-fall 3s linear infinite;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 2rem 1rem;
+            }
+            
+            .success-title {
+                font-size: 2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        
+        <h1 class="success-title">¡Pago Exitoso!</h1>
+        <p class="success-message">
+            Tu pago ha sido procesado correctamente. Recibirás un correo de confirmación con los detalles de tu compra y acceso a tus productos.
+        </p>
+        
+        <div class="payment-details">
+            <div class="detail-row">
+                <span class="detail-label">Estado del pago:</span>
+                <span class="detail-value">Completado</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Fecha:</span>
+                <span class="detail-value" id="payment-date"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Método de pago:</span>
+                <span class="detail-value">Tarjeta de crédito/débito</span>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="index.html" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                Volver al inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar la fecha actual
+        document.getElementById('payment-date').textContent = new Date().toLocaleDateString('es-MX', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        // Limpiar el carrito después del pago exitoso
+        localStorage.removeItem('capitanFinancieroCart');
+        
+        // Función para guardar la orden en la base de datos
+        async function saveOrderFromSuccess() {
+            try {
+                console.log('🚀 Iniciando guardado de orden desde success.html...');
+                
+                // Obtener datos del localStorage
+                const customerName = localStorage.getItem('customer_name');
+                const customerEmail = localStorage.getItem('customer_email');
+                const customerPhone = localStorage.getItem('customer_phone');
+                const customerAddress = localStorage.getItem('customer_address');
+                const utmData = localStorage.getItem('capitanFinancieroUTM');
+                
+                console.log('📋 Datos del cliente obtenidos:', {
+                    name: customerName,
+                    email: customerEmail,
+                    phone: customerPhone,
+                    address: customerAddress
+                });
+                
+                if (!customerName || !customerEmail) {
+                    console.log('ℹ️ No hay datos de cliente para guardar');
+                    return;
+                }
+                
+                // Obtener parámetros de la URL de Stripe
+                const urlParams = new URLSearchParams(window.location.search);
+                const paymentIntentId = urlParams.get('payment_intent');
+                const paymentIntentClientSecret = urlParams.get('payment_intent_client_secret');
+                
+                console.log('🔑 Parámetros de Stripe:', {
+                    payment_intent: paymentIntentId,
+                    payment_intent_client_secret: paymentIntentClientSecret ? 'Presente' : 'Ausente'
+                });
+                
+                if (!paymentIntentId) {
+                    console.log('⚠️ No se encontró payment_intent en la URL');
+                    return;
+                }
+                
+                // Preparar datos de la orden
+                const orderData = {
+                    customer_name: customerName,
+                    customer_email: customerEmail,
+                    customer_phone: customerPhone || '',
+                    customer_address: customerAddress || '',
+                    stripe_payment_intent_id: paymentIntentId,
+                    total_amount: "1499.00",
+                    total_amount_cents: 149900,
+                    payment_method: 'card'
+                };
+                
+                // Agregar UTM parameters si están disponibles
+                if (utmData) {
+                    try {
+                        const utm = JSON.parse(utmData);
+                        Object.assign(orderData, utm);
+                        console.log('📊 UTM parameters agregados a la orden:', utm);
+                    } catch (e) {
+                        console.error('Error al parsear UTM parameters:', e);
+                    }
+                }
+                
+                console.log('📦 Datos de la orden a enviar:', orderData);
+                
+                // Enviar orden al servidor
+                const response = await fetch('save_order.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('✅ Orden guardada exitosamente:', result);
+                
+                // Limpiar localStorage después de guardar
+                localStorage.removeItem('capitanFinancieroUTM');
+                localStorage.removeItem('customer_name');
+                localStorage.removeItem('customer_email');
+                localStorage.removeItem('customer_phone');
+                localStorage.removeItem('customer_address');
+                console.log('🧹 localStorage limpiado');
+                
+            } catch (error) {
+                console.error('❌ Error al guardar la orden:', error);
+                console.error('Stack trace:', error.stack);
+            }
+        }
+        
+        // Ejecutar cuando se carga la página
+        saveOrderFromSuccess();
+        
+        // Crear efecto de confeti
+        function createConfetti() {
+            const colors = ['#223058', '#764ba2', '#f093fb', '#f5576c'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    // Remover confeti después de la animación
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }, i * 100);
+            }
+        }
+        
+        // Iniciar confeti cuando se carga la página
+        createConfetti();
+    </script>
+</body>
+</html>

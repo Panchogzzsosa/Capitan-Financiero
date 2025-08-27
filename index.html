@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capitán Financiero</title>
+    <link rel="shortcut icon" href="Img/Logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="hero_fix.css">
+    <link rel="stylesheet" href="scroll-animations.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header con navegación -->
+    <header class="main-header">
+        <nav class="nav-container">
+            <div class="nav-logo">
+                <a href="#home">
+                    <img src="Img/LogoBlanco.png" alt="Capitán Financiero" class="nav-logo-img">
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Inicio</a></li>
+                <li><a href="#nosotros">Nosotros</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a href="#podcast">Podcast</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+            <div class="nav-cart">
+                <button class="cart-button" id="cart-button">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="hero-section" id="home">
+        <div class="hero-content">
+            <div class="hero-text">
+            </div>
+            <picture>
+                <source media="(max-width: 890px)" srcset="Img/Header3.png">
+                <img src="Img/Header.webp" alt="Header" class="header-image">
+                <img src="Img/Group 74.png" alt="Capitán Financiero" class="fallback-image">
+                <img src="Img/oswaldo.png" alt="Oswaldo" class="oswaldo-img desktop-only">
+                <h1 class="titulo scroll-animate fade-in-up">
+                    <span class="desktop-text">Domina tus finanzas, 
+                        <br>
+                        gana en la vida
+                    </span>
+                    <span class="mobile-text">Domina tus finanzas,<br>gana en la vida</span>
+                </h1>
+                <p class="titulo-descripcion scroll-animate fade-in-up delay-1">
+                    <span class="desktop-text">En el partido de la vida, las finanzas son 
+                        <br>
+                        clave para ganar. Entrenemos tu 
+                        <br>
+                        mentalidad financiera para que tomes 
+                        <br>
+                        decisiones con estrategia y logres la
+                        <br> 
+                        victoria
+                    </span>
+                    <span class="mobile-text">En el partido de la vida, las finanzas son clave para ganar.<br><br>Entrenemos tu mentalidad financiera para que tomes decisiones con estrategia y logres la victoria</span>
+                </p>
+            </picture>
+            <div class="floating-circle"></div>
+        </div>
+    </div>
+ 
+    <!-- Nosotros Section -->
+    <div class="nosotros-section" id="nosotros">
+
+        
+        <div class="mvv-container">
+            <div class="mvv-panel scroll-animate fade-in-up delay-1">
+                <div class="mvv-icon">
+                    <img src="Img/mision.png" alt="Misión" class="mvv-icon-img">
+                    <img src="Img/misio_hover.png" alt="Misión" class="mvv-icon-img-hover">
+                </div>
+                <h3>MISIÓN</h3>
+                <p>Transformar la manera en que las personas toman decisiones sobre su dinero. Nuestro enfoque práctico, cercano y motivador ayuda a las personas a alcanzar estabilidad, claridad y libertad financiera.</p>
+            </div>
+            
+            <div class="mvv-panel scroll-animate fade-in-up delay-2">
+                <div class="mvv-icon">
+                    <img src="Img/vision.png" alt="Visión" class="mvv-icon-img">
+                    <img src="Img/vision_hover.png" alt="Visión" class="mvv-icon-img-hover">
+                </div>
+                <h3>VISIÓN</h3>
+                <p>Nuestra visión es convertirnos en la referencia en el mundo como Capitanes Financieros.</p>
+            </div>
+            
+            <div class="mvv-panel scroll-animate fade-in-up delay-3">
+                <div class="mvv-icon">
+                    <img src="Img/valores.png" alt="Valores" class="mvv-icon-img">
+                    <img src="Img/valores_hover.png" alt="Valores" class="mvv-icon-img-hover">
+                </div>
+                <h3>VALORES</h3>
+                <p>Integridad
+                    <br>
+                    Disciplina
+                    <br>
+                    Autonomía
+                    <br>
+                    Búsqueda continua de la Excelencia
+                    <br>
+                    Trabajo en equipo</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos Section -->
+    <div class="products-section" id="productos">
+        <div class="products-background">
+            <img src="Img/Element (2)-02.png" alt="Decoración productos" class="products-bg-img">
+        </div>
+        <div class="section-header">
+            <h2>Nuestros Productos</h2>
+            <p>Herramientas y recursos para tu crecimiento financiero</p>
+        </div>
+        <div class="products-container-minimal">
+            <div class="product-card-minimal scroll-animate fade-in-up delay-1">
+                <div class="product-header-minimal">
+                    <h3>Programa de "Alineación Financiera I"</h3>
+                    <p class="product-description">Conviértete en el Capitán de tus finanzas: transforma tu relación con el dinero y finaliza con una inversión sólida guiada por expertos.</p>
+                </div>
+                <div class="product-features-minimal">
+                    <span><i class="fas fa-check"></i> 6 cursos impartidos por expertos</span>
+                    <span><i class="fas fa-check"></i> Diploma incluido</span>
+                    <span><i class="fas fa-check"></i> Material por cada curso</span>
+                    <span><i class="fas fa-check"></i> Acceso a la comunidad  de Capitán Financiero</span>
+                </div>
+                <div class="product-price-minimal">
+                    <span class="price-minimal">$1,499 MXN</span>
+                    <span class="original-price-minimal">$4,650 MXN</span>
+                </div>
+                <div class="promotion-text">
+                    Promoción válida hasta el 30 de agosto 2025
+                </div>
+                <button class="view-syllabus-btn" onclick="verTemario()">
+                    Ver temario
+                </button>
+                <button class="add-to-cart-minimal" data-product-id="1" data-product-name="Programa de 'Alineación Financiera I'" data-product-price="1499">
+                    Agregar al carrito
+                </button>
+            </div>
+
+            <div class="product-card-minimal coming-soon scroll-animate fade-in-up delay-2">
+                <div class="blurred-content">
+                    <div class="product-header-minimal">
+                        <h3>Guía de Inversión</h3>
+                        <p class="product-description">Descubre cómo invertir tu dinero de manera inteligente y segura con nuestra guía completa.</p>
+                    </div>
+                    <div class="product-features-minimal">
+                        <span><i class="fas fa-check"></i> 200+ páginas</span>
+                        <span><i class="fas fa-check"></i> Casos prácticos</span>
+                        <span><i class="fas fa-check"></i> Plantillas descargables</span>
+                        <span><i class="fas fa-check"></i> Actualizaciones gratuitas</span>
+                    </div>
+                    <div class="product-price-minimal">
+                        <span class="price-minimal">$899 MXN</span>
+                        <span class="original-price-minimal">$1,199 MXN</span>
+                    </div>
+                </div>
+                <div class="coming-soon-overlay">
+                    <div class="coming-soon-content">
+                        <i class="fas fa-lock coming-soon-icon"></i>
+                        <span class="coming-soon-text">Próximamente</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card-minimal coming-soon scroll-animate fade-in-up delay-3">
+                <div class="blurred-content">
+                    <div class="product-header-minimal">
+                        <h3>Kit Financiero Premium</h3>
+                        <p class="product-description">Todo lo que necesitas para transformar tu vida financiera en un solo paquete completo.</p>
+                    </div>
+                    <div class="product-features-minimal">
+                        <span><i class="fas fa-check"></i> Curso completo</span>
+                        <span><i class="fas fa-check"></i> Guía de inversión</span>
+                        <span><i class="fas fa-check"></i> Consultoría 1:1</span>
+                        <span><i class="fas fa-check"></i> Comunidad exclusiva</span>
+                    </div>
+                    <div class="product-price-minimal">
+                        <span class="price-minimal">$3,999 MXN</span>
+                        <span class="original-price-minimal">$5,499 MXN</span>
+                    </div>
+                </div>
+                <div class="coming-soon-overlay">
+                    <div class="coming-soon-content">
+                        <i class="fas fa-lock coming-soon-icon"></i>
+                        <span class="coming-soon-text">Próximamente</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Podcast Section -->
+    <div class="podcast-section" id="podcast">
+        <div class="podcast-background">
+            <img src="Img/linea.png" alt="Decoración podcast" class="podcast-bg-img">
+        </div>
+        <div class="podcast-card scroll-animate fade-in-left">
+            <div class="podcast-info">
+                <h2>Escucha nuestro Podcast</h2>
+                <p>Nuevo episodio cada jueves</p>
+                <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/show/5e7tD1geV56yzCcI8VatWw?utm_source=generator&theme=0" width="70%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Síguenos</h4>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/capitanfinanciero/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/p/Capit%C3%A1n-Financiero-61556137297880/" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.linkedin.com/company/capitanfinanciero/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.tiktok.com/@capitanfinanciero" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.youtube.com/@CAPITANFINANCIERO" target="_blank"><i class="fab fa-youtube"></i></a>
+
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <div class="newsletter-container">
+                    <h4>Newsletter</h4>
+                    <p>Contenido exclusivo sobre finanzas</p>
+                    <form id="newsletter-form">
+                        <div class="newsletter-input-group">
+                            <input type="email" id="email" placeholder="Email" required>
+                            <button type="submit">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>contacto@capitanfinanciero.com</p>
+                <p>WhatsApp: +52 1 811 240 0075</p>
+                <div class="footer-links">
+                    <a href="aviso-privacidad.html" target="_blank">Aviso de privacidad</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>Capitán Financiero | © 2025 Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Carrito de Compras -->
+    <div class="cart-overlay" id="cart-overlay">
+        <div class="cart-container">
+            <div class="cart-header">
+                <h3><i class="fas fa-shopping-cart"></i> Carrito de Compras</h3>
+                <button class="close-cart" id="close-cart">&times;</button>
+            </div>
+            <div class="cart-items" id="cart-items">
+                <!-- Los items del carrito se agregarán dinámicamente -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cart-total">$0 MXN</span>
+                </div>
+                <button class="checkout-btn" id="checkout-btn">
+                    <i class="fas fa-credit-card"></i>
+                    Proceder al pago
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="checkout-overlay" id="checkout-overlay">
+        <div class="checkout-container">
+            <div class="checkout-header">
+                <h3><i class="fas fa-credit-card"></i> Finalizar Compra</h3>
+                <button class="close-checkout" id="close-checkout">&times;</button>
+            </div>
+            <div class="checkout-content">
+                <div class="checkout-summary">
+                    <h4>Resumen de tu pedido</h4>
+                    <div id="checkout-items">
+                        <!-- Items del checkout se agregarán dinámicamente -->
+                    </div>
+                    <div class="checkout-total">
+                        <span>Total a pagar:</span>
+                        <span id="checkout-total">$0 MXN</span>
+                    </div>
+                </div>
+                <form class="checkout-form" id="checkout-form">
+                    <div class="form-group">
+                        <label for="checkout-name">Nombre completo *</label>
+                        <input type="text" id="checkout-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkout-email">Correo electrónico *</label>
+                        <input type="email" id="checkout-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkout-phone">Teléfono *</label>
+                        <input type="tel" id="checkout-phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkout-address">Dirección de facturación *</label>
+                        <textarea id="checkout-address" rows="3" required></textarea>
+                    </div>
+                    <div class="payment-methods">
+                        <h4>Método de pago</h4>
+                        <div class="payment-options">
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="card" checked>
+                                <span class="payment-label">
+                                    <i class="fas fa-credit-card"></i>
+                                    Tarjeta de crédito/débito
+                                </span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="transfer">
+                                <span class="payment-label">
+                                    <i class="fas fa-university"></i>
+                                    Transferencia bancaria
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="pay-btn">
+                        <i class="fas fa-lock"></i>
+                        Pagar ahora
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de información -->
+    <div class="popup-overlay">
+        <div class="popup-form">
+            <button class="close-popup">&times;</button>
+            <h2 class="popup-title">Solicitar información</h2>
+            <form id="info-form">
+                <input type="text" id="nombre" placeholder="Nombre" required>
+                <input type="text" id="apellido" placeholder="Apellido" required>
+                <input type="email" id="correo" placeholder="Correo" required>
+                <input type="tel" id="numero" placeholder="Número" required>
+                <textarea id="mensaje" placeholder="Mensaje" rows="4" required></textarea>
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cookie Banner -->
+    <div class="cookie-banner">
+        <p>Utilizamos cookies para mejorar tu experiencia en nuestro sitio web. Al continuar navegando, aceptas el uso de cookies.</p>
+        <button id="accept-cookies">Aceptar</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="scroll-animations.js"></script>
+    
+    <!-- Script para capturar parámetros UTM -->
+    <script>
+        // Variable para controlar si ya se registró la visita
+        let utmVisitRegistered = false;
+        
+        // Función para capturar y guardar parámetros UTM
+        function captureAndStoreUTM() {
+            // Evitar ejecución múltiple
+            if (utmVisitRegistered) {
+                console.log('🔄 UTM ya procesado anteriormente, saltando...');
+                return;
+            }
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Capturar parámetros UTM de la URL
+            const utm_source = urlParams.get('utm_source') || '';
+            const utm_medium = urlParams.get('utm_medium') || '';
+            const utm_campaign = urlParams.get('utm_campaign') || '';
+            const utm_content = urlParams.get('utm_content') || '';
+            const utm_term = urlParams.get('utm_term') || '';
+            
+            // Solo procesar si hay parámetros UTM
+            if (utm_source || utm_medium || utm_campaign) {
+                // Crear una clave única para esta visita UTM
+                const visitKey = `utm_visit_${utm_source}_${utm_medium}_${utm_campaign}_${Date.now()}`;
+                
+                // Verificar si ya se registró esta visita específica
+                if (localStorage.getItem(visitKey)) {
+                    console.log('🔄 Esta visita UTM ya fue registrada');
+                    return;
+                }
+                
+                const utmData = {
+                    utm_source,
+                    utm_medium,
+                    utm_campaign,
+                    utm_content,
+                    utm_term,
+                    referrer: document.referrer,
+                    landing_page: window.location.href,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Guardar en localStorage
+                localStorage.setItem('capitanFinancieroUTM', JSON.stringify(utmData));
+                
+                console.log('📱 UTM parameters capturados y guardados en index.html:', utmData);
+                
+                // También registrar en la consola para debugging
+                console.log('🔍 Parámetros UTM encontrados en la URL:', {
+                    utm_source,
+                    utm_medium,
+                    utm_campaign,
+                    utm_content,
+                    utm_term
+                });
+                
+                // Registrar la visita inmediatamente en la base de datos
+                registerUTMVisit(utmData, visitKey);
+                
+                // Marcar como registrada para evitar duplicados
+                utmVisitRegistered = true;
+            }
+        }
+        
+        // Función para registrar la visita UTM en la base de datos
+        function registerUTMVisit(utmData, visitKey) {
+            const params = new URLSearchParams({
+                utm_source: utmData.utm_source,
+                utm_medium: utmData.utm_medium,
+                utm_campaign: utmData.utm_campaign,
+                utm_content: utmData.utm_content,
+                utm_term: utmData.utm_term,
+                landing_page: utmData.landing_page
+            });
+            
+            // Hacer petición al servidor para registrar la visita
+            fetch('track_visit.php?' + params.toString(), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ Visita UTM registrada exitosamente:', data);
+                    // Marcar como registrada en localStorage
+                    localStorage.setItem(visitKey, 'true');
+                } else {
+                    console.warn('⚠️ Error al registrar visita UTM:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error al registrar visita UTM:', error);
+            });
+        }
+        
+        // Solo ejecutar UNA VEZ cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            captureAndStoreUTM();
+        });
+    </script>
+    
+    <!-- Botón de WhatsApp Minimalista -->
+    <a href="https://wa.me/+5218112400075" target="_blank" class="whatsapp-float" aria-label="Contactar por WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+</body>
+</html>

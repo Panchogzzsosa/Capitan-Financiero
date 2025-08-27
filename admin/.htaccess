@@ -1,0 +1,8 @@
+DirectoryIndex dashboard.php index.php
+RewriteEngine On
+
+# Si no existe el archivo, redirigir al dashboard
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^$ dashboard.php [L]
+

@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capitán Financiero - Transforma tu Vida</title>
+    <link rel="shortcut icon" href="Img/Logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #222F58;
+            --secondary: #4A90E2;
+            --accent: #FFD700;
+            --dark: #1A1A2E;
+            --light: #F8F9FA;
+            --white: #FFFFFF;
+            --gradient: linear-gradient(135deg, #222F58 0%, #4A90E2 100%);
+            --gradient-alt: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background: var(--light);
+        }
+
+        /* Header Moderno */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(34, 47, 88, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            height: 60px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .cta-button {
+            background: var(--primary);
+            color: var(--white);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(34, 47, 88, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(34, 47, 88, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-text h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            background: linear-gradient(45deg, var(--white), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            padding: 16px 32px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(34, 47, 88, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(34, 47, 88, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            padding: 16px 32px;
+            border: 2px solid var(--white);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .hero-image {
+            position: relative;
+            text-align: center;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero-logo {
+            border-radius: 20px;
+            background: var(--white);
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-width: 300px;
+            height: auto;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Stats Section */
+        .stats {
+            background: var(--white);
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+            background: var(--light);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            transition: left 0.5s ease;
+            z-index: 1;
+        }
+
+        .stat-item:hover::before {
+            left: 0;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .stat-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .stat-item:hover .stat-number,
+        .stat-item:hover .stat-label {
+            color: var(--white);
+        }
+
+        /* Features Section */
+        .features {
+            background: linear-gradient(135deg, var(--light) 0%, #E8F4FD 100%);
+            padding: 8rem 0;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--dark);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 400px;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--dark);
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        /* Products Section */
+        .products {
+            background: var(--white);
+            padding: 8rem 0;
+        }
+
+        .products-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 500px;
+        }
+
+        .product-card:hover:not(.coming-soon) {
+            transform: translateY(-10px);
+            border-color: var(--secondary);
+            box-shadow: 0 20px 50px rgba(74, 144, 226, 0.2);
+        }
+
+        /* Estilos para productos próximamente */
+        .product-card.coming-soon {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card.coming-soon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(34, 47, 88, 0.98);
+            z-index: 10;
+            border-radius: 20px;
+        }
+
+        .coming-soon-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--white);
+            z-index: 20;
+            background: var(--primary);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .coming-soon-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .coming-soon-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .product-card.coming-soon .product-content {
+            filter: blur(4px);
+            opacity: 0.3;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--gradient-alt);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .product-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        .product-original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 1.2rem;
+        }
+
+        .product-features {
+            list-style: none;
+            margin: 2rem 0;
+            flex-grow: 1;
+        }
+
+        .product-features li {
+            padding: 0.5rem 0;
+            color: var(--dark);
+        }
+
+        .product-features li::before {
+            content: '✓';
+            color: var(--secondary);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .btn-product {
+            background: var(--primary);
+            color: var(--white);
+            padding: 16px 32px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn-product:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(34, 47, 88, 0.4);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--primary);
+            padding: 8rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-content h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-content p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-section h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            color: var(--white);
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Newsletter en Footer */
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .newsletter-form input[type="email"] {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: var(--white);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-form input[type="email"]::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .newsletter-form input[type="email"]:focus {
+            outline: none;
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .newsletter-btn {
+            background: var(--accent);
+            color: var(--dark);
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .newsletter-btn:hover {
+            background: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .features-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .products-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        /* Animaciones */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.6s ease;
+        }
+
+        .slide-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.6s ease;
+        }
+
+        .slide-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <img src="Img/LogoBlanco.png" alt="Capitán Financiero" class="logo">
+            <ul class="nav-links">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#nosotros">Nosotros</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a href="#podcast">Podcast</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+            <button class="cta-button">¡Empezar Ahora!</button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Domina tus Finanzas,<br>Gana en la Vida</h1>
+                <p>En el partido de la vida, las finanzas son clave para ganar. Entrenemos tu mentalidad financiera para que tomes decisiones con estrategia y logres la victoria.</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="scrollToSection('productos')">Productos</button>
+                    <button class="btn-secondary">Solicitar Información</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="Img/Logo.png" alt="Capitán Financiero" class="hero-logo">
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item fade-in">
+                <div class="stat-content">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">Tasa de Éxito</div>
+                </div>
+            </div>
+            <div class="stat-item fade-in">
+                <div class="stat-content">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Cursos Disponibles</div>
+                </div>
+            </div>
+            <div class="stat-item fade-in">
+                <div class="stat-content">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Soporte Disponible</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="nosotros">
+        <div class="section-header">
+            <h2>¿Por Qué Elegirnos?</h2>
+            <p>Somos tu aliado estratégico en el camino hacia la libertad financiera</p>
+        </div>
+        <div class="features-container">
+            <div class="feature-card slide-in-left">
+                <div class="feature-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3>Misión Clara</h3>
+                <p>Empoderar a las personas para que tomen el control de sus finanzas, desarrollen una mentalidad de abundancia y construyan un futuro financiero sólido.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h3>Visión de Futuro</h3>
+                <p>Ser la plataforma líder en educación financiera en Latinoamérica, transformando la vida de millones de personas hacia la independencia financiera.</p>
+            </div>
+            <div class="feature-card slide-in-right">
+                <div class="feature-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Valores Sólidos</h3>
+                <p>Integridad, excelencia, innovación y compromiso con el cliente. Creemos que todos merecen una educación financiera de calidad.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products" id="productos">
+        <div class="section-header">
+            <h2>Nuestros Productos</h2>
+            <p>Herramientas y recursos para tu crecimiento financiero</p>
+        </div>
+        <div class="products-container">
+            <div class="product-card fade-in">
+                
+                <h3>Programa de "Alineación Financiera I"</h3>
+                <p>Conviértete en el Capitán de tus finanzas: transforma tu relación con el dinero y finaliza con una inversión sólida guiada por expertos.</p>
+                <div class="product-price">$1,499 MXN</div>
+                <div class="product-original-price">$2,899 MXN</div>
+                <ul class="product-features">
+                    <li>6 cursos impartidos por expertos</li>
+                    <li>Diploma incluido</li>
+                    <li>Material por cada curso</li>
+                    <li>Acceso a la comunidad</li>
+                </ul>
+                <button class="btn-product">Agregar al Carrito</button>
+            </div>
+            <div class="product-card fade-in coming-soon">
+                <div class="product-badge">Próximamente</div>
+                <div class="product-content">
+                    <h3>Guía de Inversión</h3>
+                    <p>Descubre cómo invertir tu dinero de manera inteligente y segura con nuestra guía completa y actualizada.</p>
+                    <div class="product-price">$899 MXN</div>
+                    <div class="product-original-price">$1,199 MXN</div>
+                    <ul class="product-features">
+                        <li>200+ páginas de contenido</li>
+                        <li>Casos prácticos reales</li>
+                        <li>Plantillas descargables</li>
+                        <li>Actualizaciones gratuitas</li>
+                    </ul>
+                    <button class="btn-product" disabled>Próximamente</button>
+                </div>
+                <div class="coming-soon-overlay">
+                    <i class="fas fa-clock coming-soon-icon"></i>
+                    <div class="coming-soon-text">Próximamente</div>
+                </div>
+            </div>
+            <div class="product-card fade-in coming-soon">
+                <div class="product-badge">Premium</div>
+                <div class="product-content">
+                    <h3>Kit Financiero Premium</h3>
+                    <p>Todo lo que necesitas para transformar tu vida financiera en un solo paquete completo y exclusivo.</p>
+                    <div class="product-price">$3,999 MXN</div>
+                    <div class="product-original-price">$5,499 MXN</div>
+                    <ul class="product-features">
+                        <li>Curso completo</li>
+                        <li>Guía de inversión</li>
+                        <li>Consultoría 1:1</li>
+                        <li>Comunidad exclusiva</li>
+                    </ul>
+                    <button class="btn-product" disabled>Próximamente</button>
+                </div>
+                <div class="coming-soon-overlay">
+                    <i class="fas fa-crown coming-soon-icon"></i>
+                    <div class="coming-soon-text">Próximamente</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Podcast Section -->
+    <section class="features" id="podcast">
+        <div class="section-header">
+            <h2>Nuestro Podcast</h2>
+            <p>Nuevo episodio cada jueves con consejos financieros prácticos</p>
+        </div>
+        <div class="features-container">
+            <div class="feature-card fade-in" style="grid-column: 1 / -1; max-width: 800px; margin: 0 auto;">
+                <div class="feature-icon">
+                    <i class="fas fa-podcast"></i>
+                </div>
+                <h3>Capitán Finaciero Podcast</h3>
+                <p>Escucha consejos financieros prácticos, entrevistas con expertos y estrategias para mejorar tu vida económica.</p>
+                <iframe style="border-radius:12px; margin-top: 2rem;" src="https://open.spotify.com/embed/show/5e7tD1geV56yzCcI8VatWw?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="contacto">
+        <div class="cta-content">
+            <h2>¿Listo para Transformar tu Vida Financiera?</h2>
+            <p>Únete a miles de personas que ya han cambiado su relación con el dinero y están construyendo un futuro próspero.</p>
+            <button class="btn-primary">¡Empezar Ahora!</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Capitán Financiero</h3>
+                <p>Tu aliado estratégico en el camino hacia la libertad financiera.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/capitanfinanciero/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/p/Capit%C3%A1n-Financiero-61556137297880/" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.linkedin.com/company/capitanfinanciero/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.tiktok.com/@capitanfinanciero" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.youtube.com/@CAPITANFINANCIERO" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://wa.me/+5218112400075" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Productos</h3>
+                <ul style="list-style: none;">
+                    <li>Alineación Financiera I</li>
+                    <li>Guía de Inversión</li>
+                    <li>Kit Premium</li>
+                    <li>Consultorías</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Recursos</h3>
+                <ul style="list-style: none;">
+                    <li>Blog Financiero</li>
+                    <li>Calculadoras</li>
+                    <li>Plantillas</li>
+                    <li>Comunidad</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <p>Únete a nuestra comunidad y recibe consejos financieros exclusivos.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit" class="newsletter-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Suscribirse
+                    </button>
+                </form>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>contacto@capitanfinanciero.com</p>
+                <p>+52 81 1240 0075</p>
+                <p><a href="aviso-privacidad.html" target="_blank" style="color: var(--accent);">Aviso de Privacidad</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Capitán Financiero. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Animaciones al hacer scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observar elementos con animaciones
+        document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Función para scroll suave a secciones
+        function scrollToSection(sectionId) {
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // Smooth scroll para navegación
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(34, 47, 88, 0.98)';
+            } else {
+                header.style.background = 'rgba(34, 47, 88, 0.95)';
+            }
+        });
+
+        // Botones CTA - Sin alertas
+        document.querySelectorAll('.btn-primary, .cta-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Aquí puedes agregar la lógica para abrir el formulario o redirigir
+                // Sin alertas molestas
+            });
+        });
+    </script>
+</body>
+</html>

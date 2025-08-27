@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Newsletter - Diseño Minimalista</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Test del Newsletter - Diseño Minimalista</h1>
+        
+        <!-- Newsletter Principal -->
+        <div class="test-section">
+            <h2>Newsletter Principal</h2>
+            <div class="newsletter-section">
+                <div class="newsletter-container">
+                    <h4>NEWSLETTER</h4>
+                    <p>Contenido exclusivo sobre finanzas</p>
+                    <form id="newsletter-form">
+                        <input type="email" placeholder="Email" required>
+                        <button type="submit">→</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Newsletter del Footer -->
+        <div class="test-section" style="background-color: #222F58; color: white;">
+            <h2>Newsletter del Footer</h2>
+            <div class="footer-section">
+                <div class="newsletter-container">
+                    <h4>NEWSLETTER</h4>
+                    <p>Contenido exclusivo sobre finanzas</p>
+                    <form id="newsletter-form">
+                        <input type="email" placeholder="Email" required>
+                        <button type="submit">Enviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Instrucciones de Test -->
+        <div class="test-section">
+            <h2>Instrucciones de Test</h2>
+            <ul>
+                <li><strong>Desktop:</strong> El input debe estar centrado y el botón a la derecha</li>
+                <li><strong>Tablet (768px):</strong> El formulario debe ser más compacto pero mantener el layout horizontal</li>
+                <li><strong>Móvil (480px):</strong> El formulario debe ser compacto con el input centrado y botón a la derecha</li>
+                <li><strong>Diseño:</strong> Debe ser minimalista con sombras sutiles y bordes redondeados</li>
+            </ul>
+            
+            <h3>Características del Nuevo Diseño:</h3>
+            <ul>
+                <li>✅ Input centrado y expandible (flex: 1)</li>
+                <li>✅ Botón a la derecha del input (flex-shrink: 0)</li>
+                <li>✅ Diseño minimalista con sombras sutiles</li>
+                <li>✅ Responsive para todos los dispositivos</li>
+                <li>✅ Input y botón alineados horizontalmente</li>
+                <li>✅ Espaciado consistente entre elementos</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
