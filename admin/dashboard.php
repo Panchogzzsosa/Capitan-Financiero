@@ -93,6 +93,9 @@ try {
         ORDER BY oi.created_at DESC
     ")->fetchAll();
     
+    // Webinar registrations
+    $webinars = $pdo->query("\n        SELECT nombre_completo, correo_electronico, numero_telefono, created_at\n        FROM webinar\n        ORDER BY created_at DESC\n    ")->fetchAll();
+    
     // Get statistics
     $total_customers = $pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn();
     $total_orders = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
@@ -517,6 +520,11 @@ try {
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="qr-tab" data-bs-toggle="tab" data-bs-target="#qr" type="button">
                     <i class="fas fa-qrcode"></i> Generar QR
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="webinar-tab" data-bs-toggle="tab" data-bs-target="#webinar" type="button">
+                    <i class="fas fa-video"></i> Webinar
                 </button>
             </li>
         </ul>
@@ -944,6 +952,43 @@ try {
                     </div>
                 </div>
             </div>
+
+            <!-- Webinar Tab -->
+            <div class="tab-pane fade" id="webinar">
+                <div class="text-center">
+                    <div class="mb-4">
+                        <h4><i class="fas fa-video"></i> Webinar</h4>
+                        <p class="text-muted">Gestión básica de webinars y enlaces de transmisión.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Registro de Webinar</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="webinarTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre completo</th>
+                                            <th>Correo electrónico</th>
+                                            <th>Número de teléfono</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($webinars as $w): ?>
+                                        <tr>
+                                            <td><strong><?php echo htmlspecialchars($w['nombre_completo']); ?></strong></td>
+                                            <td><?php echo htmlspecialchars($w['correo_electronico']); ?></td>
+                                            <td><?php echo htmlspecialchars($w['numero_telefono']); ?></td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1027,6 +1072,14 @@ try {
             });
             $('#formsTable').DataTable({
                 order: [[0, 'desc']],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
+                },
+                pageLength: 10,
+                responsive: true
+            });
+            $('#webinarTable').DataTable({
+                order: [[0, 'asc']],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
                 },

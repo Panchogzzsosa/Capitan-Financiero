@@ -82,11 +82,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Calcular descuento y total final
         const subtotal = cartTotal;
-        const discount = 315100; // $3,151.00 en centavos
+        const discount = 275100; // $2,751.00 en centavos
         const finalTotal = subtotal - discount;
         
-        // IMPORTANTE: Usar el precio final con promoción para Stripe
-        cartTotal = finalTotal; // Esto es lo que se enviará a Stripe
+        // IMPORTANTE: El precio visual se mantiene para el usuario
+        cartTotal = finalTotal; // Precio visual: $1,899.00 (se muestra al usuario)
+        // NOTA: El precio real enviado a Stripe es de 1000 centavos ($10.00) en createPaymentIntent()
 
         // Actualizar precio del producto individual
         const productPriceElement = document.querySelector('.product-price');
@@ -170,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             const requestData = {
-                amount: cartTotal, // Este es el precio final con promoción ($1,499.00)
+                amount: cartTotal, // Este es el precio final con promoción ($1,899.00)
                 email: document.getElementById('email').value,
                 name: document.getElementById('name').value
             };

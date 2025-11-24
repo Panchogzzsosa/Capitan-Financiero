@@ -554,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const productId = '1';
         const productName = 'Programa de "Alineación Financiera I"';
-        const productPrice = 1499;
+        const productPrice = 1899;
 
         console.log('📦 Producto a agregar:', { productId, productName, productPrice });
         console.log('🛒 Estado actual del carrito:', cart);

@@ -153,8 +153,8 @@ define('DB_USER', 'tu_usuario');
 define('DB_PASS', 'tu_password');
 
 // Claves de Stripe (obtener desde dashboard.stripe.com)
-define('STRIPE_PUBLISHABLE_KEY', 'pk_test_...');
-define('STRIPE_SECRET_KEY', 'sk_test_...');
+define('STRIPE_PUBLISHABLE_KEY', 'pk_test_...'); // Clave pública TEST
+define('STRIPE_SECRET_KEY', 'sk_test_...'); // Clave secreta TEST
 ```
 
 ### **4. Configuración de WhatsApp**
