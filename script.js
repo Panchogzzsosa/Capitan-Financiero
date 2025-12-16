@@ -22,12 +22,10 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Nombre decodificado:', decodedName);
             
             // Agregar al carrito
-            const product = {
-                id: parseInt(productId),
-                name: decodedName,
-                price: parseInt(productPrice),
-                quantity: 1
-            };
+            const parsedId = parseInt(productId);
+            const parsedPrice = parseInt(productPrice);
+            const fixedPrice = parsedId === 1 ? 4650 : parsedPrice;
+            const product = { id: parsedId, name: decodedName, price: fixedPrice, quantity: 1 };
             
             console.log('Producto a agregar:', product);
             
@@ -411,6 +409,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (savedCart) {
         try {
             cart = JSON.parse(savedCart);
+            let migrated = false;
+            cart.forEach(item => {
+                const idNum = typeof item.id === 'string' ? parseInt(item.id) : item.id;
+                if (idNum === 1 && item.price && item.price !== 4650) {
+                    item.price = 4650;
+                    migrated = true;
+                }
+            });
+            if (migrated) {
+                localStorage.setItem('capitanFinancieroCart', JSON.stringify(cart));
+            }
             
             // Verificar si hay productos agregados via QR y mostrar notificación
             const qrProducts = cart.filter(item => item.addedViaQR);
@@ -554,7 +563,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const productId = '1';
         const productName = 'Programa de "Alineación Financiera I"';
-        const productPrice = 1899;
+        const productPrice = 4650;
 
         console.log('📦 Producto a agregar:', { productId, productName, productPrice });
         console.log('🛒 Estado actual del carrito:', cart);

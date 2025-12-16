@@ -16,7 +16,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 //$baseUrl = 'https://prueba.capitanfinanciero.com'; // Cambia por tu dominio real
 
 // Si estás probando localmente, usa esta línea en su lugar:
-$baseUrl = 'http://localhost/capitanfinanciero';
+$baseUrl = 'https://capitanfinanciero.com/';
 
 // Crear URL para el carrito con parámetros UTM para rastreo
 $cartUrl = $baseUrl . '/checkout.html?utm_source=qr_code&utm_medium=qr_code&utm_campaign=Alineación_Financiera_I&utm_content=programa_basico&utm_term=finanzas_personales';

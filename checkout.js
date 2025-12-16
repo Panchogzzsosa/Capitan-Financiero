@@ -42,8 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Cargar carrito desde localStorage
     function loadCart() {
-        // Limpiar localStorage para forzar el carrito de prueba
-        localStorage.removeItem('capitanFinancieroCart');
+        // Mantener carrito existente si está disponible
         
         const savedCart = localStorage.getItem('capitanFinancieroCart');
         console.log('Carrito guardado:', savedCart);
@@ -52,6 +51,13 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 cart = JSON.parse(savedCart);
                 console.log('Carrito cargado:', cart);
+                // Normalizar a centavos si viene en pesos
+                cart = cart.map(item => {
+                    if (typeof item.price === 'number' && item.price < 10000) {
+                        return { ...item, price: item.price * 100 };
+                    }
+                    return item;
+                });
             } catch (error) {
                 console.error('Error al cargar el carrito:', error);
                 cart = [];
@@ -82,12 +88,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Calcular descuento y total final
         const subtotal = cartTotal;
-        const discount = 275100; // $2,751.00 en centavos
-        const finalTotal = subtotal - discount;
+        const discount = 0;
+        const finalTotal = subtotal;
         
-        // IMPORTANTE: El precio visual se mantiene para el usuario
-        cartTotal = finalTotal; // Precio visual: $1,899.00 (se muestra al usuario)
-        // NOTA: El precio real enviado a Stripe es de 1000 centavos ($10.00) en createPaymentIntent()
+        cartTotal = finalTotal;
 
         // Actualizar precio del producto individual
         const productPriceElement = document.querySelector('.product-price');
@@ -708,4 +712,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Iniciar cuando el DOM esté listo
     init();
-}); 
+});

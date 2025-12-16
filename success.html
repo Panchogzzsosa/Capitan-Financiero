@@ -258,14 +258,29 @@
                 }
                 
                 // Preparar datos de la orden
+                // Calcular total desde el carrito si está disponible
+                let totalCents = 465000;
+                try {
+                    const cartJson = localStorage.getItem('capitanFinancieroCart');
+                    if (cartJson) {
+                        const cartItems = JSON.parse(cartJson);
+                        const total = cartItems.reduce((sum, it) => sum + (parseInt(it.price, 10) || 0) * (parseInt(it.quantity, 10) || 1), 0);
+                        if (total > 0) {
+                            totalCents = total * 100;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('No se pudo leer el carrito, usando total por defecto');
+                }
+
                 const orderData = {
                     customer_name: customerName,
                     customer_email: customerEmail,
                     customer_phone: customerPhone || '',
                     customer_address: customerAddress || '',
                     stripe_payment_intent_id: paymentIntentId,
-                    total_amount: "10.00", // Precio real cobrado en Stripe
-                    total_amount_cents: 1000, // 10.00 pesos en centavos
+                    total_amount: (totalCents / 100).toFixed(2),
+                    total_amount_cents: totalCents,
                     payment_method: 'card'
                 };
                 
