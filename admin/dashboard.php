@@ -8,6 +8,170 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit;
 }
 
+function webinarNormalizePhoneDigits($phone) {
+    $digits = preg_replace('/\D+/', '', (string)$phone);
+    $digits = ltrim($digits, '0');
+    if (substr($digits, 0, 2) === '52' && strlen($digits) > 10) {
+        $digits = substr($digits, 2);
+        if (substr($digits, 0, 1) === '1' && strlen($digits) === 11) {
+            $digits = substr($digits, 1);
+        }
+    }
+    return $digits;
+}
+
+function webinarExtractLada($phone) {
+    $digits = webinarNormalizePhoneDigits($phone);
+    if (substr($digits, 0, 2) === '52' && strlen($digits) === 10) {
+        $two = substr($digits, 2, 2);
+        $twoDigit = ['33' => true, '55' => true, '56' => true, '81' => true];
+        if (isset($twoDigit[$two])) return $two;
+        return substr($digits, 2, 3);
+    }
+    if (strlen($digits) < 10) return '';
+    $two = substr($digits, 0, 2);
+    $twoDigit = ['33' => true, '55' => true, '56' => true, '81' => true];
+    if (isset($twoDigit[$two])) return $two;
+    return substr($digits, 0, 3);
+}
+
+function webinarMexicoStateFromLada($lada) {
+    $lada = (string)$lada;
+    $twoDigitStates = [
+        '33' => 'Jalisco',
+        '55' => 'CDMX / Estado de México',
+        '56' => 'CDMX / Estado de México',
+        '81' => 'Nuevo León',
+    ];
+    if (isset($twoDigitStates[$lada])) return $twoDigitStates[$lada];
+
+    $threeDigitStates = [
+        // Aguascalientes
+        '449' => 'Aguascalientes', '458' => 'Aguascalientes', '465' => 'Aguascalientes', '495' => 'Aguascalientes', '496' => 'Aguascalientes',
+        // Baja California
+        '616' => 'Baja California', '646' => 'Baja California', '653' => 'Baja California', '658' => 'Baja California', '661' => 'Baja California', '663' => 'Baja California', '664' => 'Baja California', '665' => 'Baja California', '686' => 'Baja California',
+        // Baja California Sur
+        '612' => 'Baja California Sur', '613' => 'Baja California Sur', '615' => 'Baja California Sur', '624' => 'Baja California Sur',
+        // Campeche
+        '913' => 'Campeche', '938' => 'Campeche', '981' => 'Campeche', '982' => 'Campeche', '983' => 'Campeche', '996' => 'Campeche',
+        // Chiapas
+        '916' => 'Chiapas', '917' => 'Chiapas', '918' => 'Chiapas', '919' => 'Chiapas', '932' => 'Chiapas', '934' => 'Chiapas', '961' => 'Chiapas', '962' => 'Chiapas', '963' => 'Chiapas', '964' => 'Chiapas', '965' => 'Chiapas', '966' => 'Chiapas', '967' => 'Chiapas', '968' => 'Chiapas', '992' => 'Chiapas', '994' => 'Chiapas',
+        // Chihuahua
+        '614' => 'Chihuahua', '621' => 'Chihuahua', '625' => 'Chihuahua', '626' => 'Chihuahua', '627' => 'Chihuahua', '628' => 'Chihuahua', '629' => 'Chihuahua', '635' => 'Chihuahua', '636' => 'Chihuahua', '639' => 'Chihuahua', '648' => 'Chihuahua', '649' => 'Chihuahua', '652' => 'Chihuahua', '656' => 'Chihuahua', '657' => 'Chihuahua', '659' => 'Chihuahua',
+        // Coahuila
+        '671' => 'Coahuila', '842' => 'Coahuila', '844' => 'Coahuila', '861' => 'Coahuila', '862' => 'Coahuila', '864' => 'Coahuila', '866' => 'Coahuila', '867' => 'Coahuila', '869' => 'Coahuila', '871' => 'Coahuila', '872' => 'Coahuila', '873' => 'Coahuila', '877' => 'Coahuila', '878' => 'Coahuila',
+        // Colima
+        '312' => 'Colima', '313' => 'Colima', '314' => 'Colima',
+        // Durango
+        '618' => 'Durango', '674' => 'Durango', '675' => 'Durango', '676' => 'Durango', '677' => 'Durango',
+        // Guanajuato
+        '352' => 'Guanajuato', '411' => 'Guanajuato', '412' => 'Guanajuato', '413' => 'Guanajuato', '415' => 'Guanajuato', '417' => 'Guanajuato', '418' => 'Guanajuato', '419' => 'Guanajuato', '421' => 'Guanajuato', '428' => 'Guanajuato', '429' => 'Guanajuato', '432' => 'Guanajuato', '438' => 'Guanajuato', '442' => 'Guanajuato', '445' => 'Guanajuato', '456' => 'Guanajuato', '461' => 'Guanajuato', '462' => 'Guanajuato', '464' => 'Guanajuato', '466' => 'Guanajuato', '468' => 'Guanajuato', '469' => 'Guanajuato', '472' => 'Guanajuato', '473' => 'Guanajuato', '476' => 'Guanajuato', '477' => 'Guanajuato', '479' => 'Guanajuato',
+        // Guerrero
+        '721' => 'Guerrero', '727' => 'Guerrero', '732' => 'Guerrero', '733' => 'Guerrero', '736' => 'Guerrero', '741' => 'Guerrero', '742' => 'Guerrero', '744' => 'Guerrero', '745' => 'Guerrero', '747' => 'Guerrero', '753' => 'Guerrero', '754' => 'Guerrero', '755' => 'Guerrero', '756' => 'Guerrero', '757' => 'Guerrero', '758' => 'Guerrero', '762' => 'Guerrero', '767' => 'Guerrero', '781' => 'Guerrero',
+        // Hidalgo
+        '441' => 'Hidalgo', '483' => 'Hidalgo', '591' => 'Hidalgo', '738' => 'Hidalgo', '743' => 'Hidalgo', '746' => 'Hidalgo', '748' => 'Hidalgo', '759' => 'Hidalgo', '761' => 'Hidalgo', '763' => 'Hidalgo', '771' => 'Hidalgo', '772' => 'Hidalgo', '773' => 'Hidalgo', '774' => 'Hidalgo', '775' => 'Hidalgo', '776' => 'Hidalgo', '778' => 'Hidalgo', '779' => 'Hidalgo', '789' => 'Hidalgo', '791' => 'Hidalgo',
+        // Jalisco
+        '315' => 'Jalisco', '316' => 'Jalisco', '317' => 'Jalisco', '321' => 'Jalisco', '322' => 'Jalisco', '326' => 'Jalisco', '341' => 'Jalisco', '342' => 'Jalisco', '343' => 'Jalisco', '344' => 'Jalisco', '345' => 'Jalisco', '346' => 'Jalisco', '347' => 'Jalisco', '348' => 'Jalisco', '349' => 'Jalisco', '354' => 'Jalisco', '357' => 'Jalisco', '358' => 'Jalisco', '371' => 'Jalisco', '372' => 'Jalisco', '373' => 'Jalisco', '374' => 'Jalisco', '375' => 'Jalisco', '376' => 'Jalisco', '377' => 'Jalisco', '378' => 'Jalisco', '382' => 'Jalisco', '384' => 'Jalisco', '385' => 'Jalisco', '386' => 'Jalisco', '387' => 'Jalisco', '388' => 'Jalisco', '391' => 'Jalisco', '392' => 'Jalisco', '393' => 'Jalisco', '395' => 'Jalisco', '424' => 'Jalisco', '431' => 'Jalisco', '437' => 'Jalisco', '457' => 'Jalisco', '474' => 'Jalisco', '475' => 'Jalisco', '499' => 'Jalisco',
+        // Estado de México
+        '427' => 'Estado de México', '588' => 'Estado de México', '592' => 'Estado de México', '593' => 'Estado de México', '594' => 'Estado de México', '595' => 'Estado de México', '596' => 'Estado de México', '597' => 'Estado de México', '599' => 'Estado de México', '711' => 'Estado de México', '712' => 'Estado de México', '713' => 'Estado de México', '714' => 'Estado de México', '716' => 'Estado de México', '717' => 'Estado de México', '718' => 'Estado de México', '719' => 'Estado de México', '722' => 'Estado de México', '723' => 'Estado de México', '724' => 'Estado de México', '725' => 'Estado de México', '726' => 'Estado de México', '728' => 'Estado de México', '729' => 'Estado de México', '751' => 'Estado de México',
+        // Michoacán
+        '328' => 'Michoacán', '351' => 'Michoacán', '353' => 'Michoacán', '355' => 'Michoacán', '356' => 'Michoacán', '359' => 'Michoacán', '381' => 'Michoacán', '383' => 'Michoacán', '394' => 'Michoacán', '422' => 'Michoacán', '423' => 'Michoacán', '425' => 'Michoacán', '426' => 'Michoacán', '434' => 'Michoacán', '435' => 'Michoacán', '436' => 'Michoacán', '443' => 'Michoacán', '447' => 'Michoacán', '451' => 'Michoacán', '452' => 'Michoacán', '453' => 'Michoacán', '454' => 'Michoacán', '455' => 'Michoacán', '459' => 'Michoacán', '471' => 'Michoacán', '715' => 'Michoacán', '786' => 'Michoacán',
+        // Morelos
+        '731' => 'Morelos', '734' => 'Morelos', '735' => 'Morelos', '737' => 'Morelos', '739' => 'Morelos', '769' => 'Morelos', '777' => 'Morelos',
+        // Nayarit
+        '311' => 'Nayarit', '319' => 'Nayarit', '323' => 'Nayarit', '324' => 'Nayarit', '325' => 'Nayarit', '327' => 'Nayarit', '329' => 'Nayarit', '389' => 'Nayarit',
+        // Nuevo León
+        '488' => 'Nuevo León', '821' => 'Nuevo León', '823' => 'Nuevo León', '824' => 'Nuevo León', '825' => 'Nuevo León', '826' => 'Nuevo León', '828' => 'Nuevo León', '829' => 'Nuevo León', '892' => 'Nuevo León',
+        // Oaxaca
+        '236' => 'Oaxaca', '274' => 'Oaxaca', '281' => 'Oaxaca', '283' => 'Oaxaca', '287' => 'Oaxaca', '924' => 'Oaxaca', '951' => 'Oaxaca', '953' => 'Oaxaca', '954' => 'Oaxaca', '958' => 'Oaxaca', '971' => 'Oaxaca', '972' => 'Oaxaca', '995' => 'Oaxaca',
+        // Puebla
+        '220' => 'Puebla', '221' => 'Puebla', '222' => 'Puebla', '223' => 'Puebla', '224' => 'Puebla', '226' => 'Puebla', '227' => 'Puebla', '231' => 'Puebla', '232' => 'Puebla', '233' => 'Puebla', '237' => 'Puebla', '238' => 'Puebla', '243' => 'Puebla', '244' => 'Puebla', '245' => 'Puebla', '248' => 'Puebla', '249' => 'Puebla', '275' => 'Puebla', '276' => 'Puebla', '278' => 'Puebla', '282' => 'Puebla', '764' => 'Puebla', '797' => 'Puebla',
+        // Querétaro
+        '414' => 'Querétaro', '441' => 'Querétaro', '442' => 'Querétaro', '446' => 'Querétaro', '448' => 'Querétaro', '487' => 'Querétaro',
+        // Quintana Roo
+        '984' => 'Quintana Roo', '987' => 'Quintana Roo', '997' => 'Quintana Roo', '998' => 'Quintana Roo',
+        // San Luis Potosí
+        '440' => 'San Luis Potosí', '444' => 'San Luis Potosí', '481' => 'San Luis Potosí', '482' => 'San Luis Potosí', '485' => 'San Luis Potosí', '486' => 'San Luis Potosí', '489' => 'San Luis Potosí', '845' => 'San Luis Potosí',
+        // Sinaloa
+        '667' => 'Sinaloa', '668' => 'Sinaloa', '669' => 'Sinaloa', '672' => 'Sinaloa', '673' => 'Sinaloa', '687' => 'Sinaloa', '694' => 'Sinaloa', '695' => 'Sinaloa', '696' => 'Sinaloa', '697' => 'Sinaloa', '698' => 'Sinaloa',
+        // Sonora
+        '622' => 'Sonora', '623' => 'Sonora', '631' => 'Sonora', '632' => 'Sonora', '633' => 'Sonora', '634' => 'Sonora', '637' => 'Sonora', '638' => 'Sonora', '641' => 'Sonora', '642' => 'Sonora', '643' => 'Sonora', '644' => 'Sonora', '645' => 'Sonora', '647' => 'Sonora', '651' => 'Sonora', '662' => 'Sonora',
+        // Tabasco
+        '914' => 'Tabasco', '923' => 'Tabasco', '933' => 'Tabasco', '936' => 'Tabasco', '937' => 'Tabasco', '993' => 'Tabasco',
+        // Tamaulipas
+        '482' => 'Tamaulipas', '831' => 'Tamaulipas', '832' => 'Tamaulipas', '833' => 'Tamaulipas', '834' => 'Tamaulipas', '835' => 'Tamaulipas', '836' => 'Tamaulipas', '841' => 'Tamaulipas', '891' => 'Tamaulipas', '894' => 'Tamaulipas', '897' => 'Tamaulipas', '899' => 'Tamaulipas',
+        // Tlaxcala
+        '241' => 'Tlaxcala', '246' => 'Tlaxcala', '247' => 'Tlaxcala', '749' => 'Tlaxcala',
+        // Veracruz
+        '225' => 'Veracruz', '228' => 'Veracruz', '229' => 'Veracruz', '235' => 'Veracruz', '271' => 'Veracruz', '272' => 'Veracruz', '279' => 'Veracruz', '284' => 'Veracruz', '285' => 'Veracruz', '288' => 'Veracruz', '294' => 'Veracruz', '296' => 'Veracruz', '297' => 'Veracruz', '765' => 'Veracruz', '766' => 'Veracruz', '768' => 'Veracruz', '782' => 'Veracruz', '783' => 'Veracruz', '784' => 'Veracruz', '785' => 'Veracruz', '846' => 'Veracruz', '921' => 'Veracruz', '922' => 'Veracruz',
+        // Yucatán
+        '969' => 'Yucatán', '985' => 'Yucatán', '986' => 'Yucatán', '988' => 'Yucatán', '990' => 'Yucatán', '991' => 'Yucatán', '999' => 'Yucatán',
+        // Zacatecas
+        '433' => 'Zacatecas', '463' => 'Zacatecas', '467' => 'Zacatecas', '478' => 'Zacatecas', '492' => 'Zacatecas', '493' => 'Zacatecas', '494' => 'Zacatecas', '498' => 'Zacatecas',
+        // USA
+        '575' => 'Nuevo México, EE. UU.',
+        '707' => 'California, EE. UU.',
+    ];
+
+    return $threeDigitStates[$lada] ?? '';
+}
+
+if (isset($_GET['export']) && $_GET['export'] === 'webinar') {
+    try {
+        $pdo = getDBConnection();
+        $rows = $pdo->query("
+            SELECT nombre_completo, correo_electronico, numero_telefono, utm_source, created_at
+            FROM webinar
+            ORDER BY created_at DESC
+        ")->fetchAll();
+    } catch (PDOException $e) {
+        http_response_code(500);
+        exit;
+    }
+
+    $csvSafe = static function ($value) {
+        $value = (string)($value ?? '');
+        $value = str_replace(["\r\n", "\r", "\n"], ' ', $value);
+        if ($value !== '' && preg_match('/^[=\+\-@]/', $value)) {
+            return "'" . $value;
+        }
+        return $value;
+    };
+
+    $filename = 'webinar_' . date('Y-m-d_H-i-s') . '.csv';
+    header('Content-Type: text/csv; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+
+    echo "\xEF\xBB\xBF";
+    $out = fopen('php://output', 'w');
+    fputcsv($out, ['Nombre completo', 'Correo electrónico', 'Número de teléfono', 'Red Social', 'Estado', 'Fecha registro'], ';');
+
+    foreach ($rows as $row) {
+        $source = strtolower(trim((string)($row['utm_source'] ?? '')));
+        $sourceLabel = $source === '' ? '' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($row['utm_source'] ?? ''));
+        $lada = webinarExtractLada($row['numero_telefono'] ?? '');
+        $state = webinarMexicoStateFromLada($lada);
+
+        fputcsv(
+            $out,
+            [
+                $csvSafe($row['nombre_completo'] ?? ''),
+                $csvSafe($row['correo_electronico'] ?? ''),
+                $csvSafe($row['numero_telefono'] ?? ''),
+                $csvSafe($sourceLabel),
+                $csvSafe($state),
+                $csvSafe($row['created_at'] ?? ''),
+            ],
+            ';'
+        );
+    }
+
+    fclose($out);
+    exit;
+}
+
 // Get data from database
 try {
     $pdo = getDBConnection();
@@ -94,7 +258,39 @@ try {
     ")->fetchAll();
     
     // Webinar registrations
-    $webinars = $pdo->query("\n        SELECT nombre_completo, correo_electronico, numero_telefono, created_at\n        FROM webinar\n        ORDER BY created_at DESC\n    ")->fetchAll();
+    $webinars = $pdo->query("
+        SELECT
+            nombre_completo,
+            correo_electronico,
+            numero_telefono,
+            utm_source,
+            created_at
+        FROM webinar
+        ORDER BY created_at DESC
+    ")->fetchAll();
+
+    // Prepare data for charts
+    $stateCounts = [];
+    $sourceCounts = [];
+
+    foreach ($webinars as $w) {
+        // State logic
+        $lada = webinarExtractLada($w['numero_telefono'] ?? '');
+        $state = webinarMexicoStateFromLada($lada);
+        if ($state === '') $state = 'Sin Informacion';
+        if (!isset($stateCounts[$state])) $stateCounts[$state] = 0;
+        $stateCounts[$state]++;
+
+        // Source logic
+        $source = strtolower(trim((string)($w['utm_source'] ?? '')));
+        $sourceLabel = $source === '' ? 'Sin Informacion' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($w['utm_source'] ?? ''));
+        if (!isset($sourceCounts[$sourceLabel])) $sourceCounts[$sourceLabel] = 0;
+        $sourceCounts[$sourceLabel]++;
+    }
+
+    // Sort counts for better visualization
+    arsort($stateCounts);
+    arsort($sourceCounts);
     
     // Get statistics
     $total_customers = $pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn();
@@ -960,9 +1156,42 @@ try {
                         <h4><i class="fas fa-video"></i> Webinar</h4>
                         <p class="text-muted">Gestión básica de webinars y enlaces de transmisión.</p>
                     </div>
+
+                    <!-- Charts Row -->
+                    <div class="row mb-4 text-start">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <div class="card h-100">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0 text-primary"><i class="fas fa-map-marker-alt"></i> Registros por Estado</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="stateChart" style="max-height: 300px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0 text-primary"></i>Red Social</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="sourceChart" style="max-height: 300px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title">Registro de Webinar</h5>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#webinarLinksModal">
+                                    <i class="fas fa-link"></i> Links
+                                </button>
+                                <a href="dashboard.php?export=webinar" class="btn btn-success btn-sm">
+                                    <i class="fas fa-file-excel"></i> Descargar Excel
+                                </a>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -972,6 +1201,9 @@ try {
                                             <th>Nombre completo</th>
                                             <th>Correo electrónico</th>
                                             <th>Número de teléfono</th>
+                                            <th>Red Social</th>
+                                            <th>Estado</th>
+                                            <th>Fecha registro</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -980,6 +1212,15 @@ try {
                                             <td><strong><?php echo htmlspecialchars($w['nombre_completo']); ?></strong></td>
                                             <td><?php echo htmlspecialchars($w['correo_electronico']); ?></td>
                                             <td><?php echo htmlspecialchars($w['numero_telefono']); ?></td>
+                                            <?php
+                                                $source = strtolower(trim((string)($w['utm_source'] ?? '')));
+                                                $sourceLabel = $source === '' ? '' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($w['utm_source'] ?? ''));
+                                                $lada = webinarExtractLada($w['numero_telefono'] ?? '');
+                                                $state = webinarMexicoStateFromLada($lada);
+                                            ?>
+                                            <td><?php echo htmlspecialchars($sourceLabel); ?></td>
+                                            <td><?php echo htmlspecialchars($state); ?></td>
+                                            <td><small class="text-muted"><?php echo htmlspecialchars($w['created_at'] ?? ''); ?></small></td>
                                         </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -987,6 +1228,211 @@ try {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="webinarLinksModal" tabindex="-1" aria-labelledby="webinarLinksModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="webinarLinksModalLabel">Links UTM Webinar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <div class="mb-4">
+                        <h6 class="mb-2">Meta (Facebook / Instagram)</h6>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Facebook Ads</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=facebook&utm_medium=paid_social&utm_campaign=webinar_enero_2026&utm_content={{ad.name}}">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Instagram Ads</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=instagram&utm_medium=paid_social&utm_campaign=webinar_enero_2026&utm_content={{ad.name}}">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Facebook orgánico (post)</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=facebook&utm_medium=organic_social&utm_campaign=webinar_enero_2026&utm_content=post">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Instagram orgánico (bio)</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=instagram&utm_medium=organic_social&utm_campaign=webinar_enero_2026&utm_content=bio">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Instagram story</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=instagram&utm_medium=organic_social&utm_campaign=webinar_enero_2026&utm_content=story">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="mb-2">TikTok</h6>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">TikTok Ads</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=tiktok&utm_medium=paid_social&utm_campaign=webinar_enero_2026&utm_content={{ad.name}}">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">TikTok orgánico</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=tiktok&utm_medium=organic_social&utm_campaign=webinar_enero_2026&utm_content=video">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="mb-2">YouTube</h6>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">YouTube Ads</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=youtube&utm_medium=paid_video&utm_campaign=webinar_enero_2026&utm_content={{ad.name}}">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">YouTube orgánico (descripción)</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=youtube&utm_medium=organic_video&utm_campaign=webinar_enero_2026&utm_content=description">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="mb-2">Google</h6>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Google Search Ads</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=google&utm_medium=cpc&utm_campaign=webinar_enero_2026&utm_term={keyword}&utm_content={creative}">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Google orgánico</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=google&utm_medium=organic&utm_campaign=webinar_enero_2026">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="mb-2">WhatsApp</h6>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">WhatsApp (broadcast/lista)</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=whatsapp&utm_medium=message&utm_campaign=webinar_enero_2026&utm_content=broadcast">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">WhatsApp (grupo)</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=whatsapp&utm_medium=group&utm_campaign=webinar_enero_2026&utm_content=group">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="mb-2">Email / SMS</h6>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Email (newsletter)</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=email&utm_medium=newsletter&utm_campaign=webinar_enero_2026&utm_content=correo_1">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Email (automation)</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=email&utm_medium=automation&utm_campaign=webinar_enero_2026&utm_content=secuencia_1">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">SMS</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=sms&utm_medium=message&utm_campaign=webinar_enero_2026&utm_content=sms_1">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="mb-2">LinkedIn</h6>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">LinkedIn Ads</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=linkedin&utm_medium=paid_social&utm_campaign=webinar_enero_2026&utm_content={{ad.name}}">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">LinkedIn orgánico</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=linkedin&utm_medium=organic_social&utm_campaign=webinar_enero_2026&utm_content=post">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="mb-2">X (Twitter)</h6>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">X Ads</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=x&utm_medium=paid_social&utm_campaign=webinar_enero_2026&utm_content={{ad.name}}">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">X orgánico</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=x&utm_medium=organic_social&utm_campaign=webinar_enero_2026&utm_content=tweet">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <h6 class="mb-2">Telegram / Messenger</h6>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Telegram</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=telegram&utm_medium=message&utm_campaign=webinar_enero_2026&utm_content=canal">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="fw-semibold mb-1">Messenger</div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly value="https://webinar.capitanfinanciero.com/?utm_source=messenger&utm_medium=message&utm_campaign=webinar_enero_2026&utm_content=inbox">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyWebinarLink(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -1035,7 +1481,81 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Charts Data
+        const stateData = <?php echo json_encode($stateCounts); ?>;
+        const sourceData = <?php echo json_encode($sourceCounts); ?>;
+
+        // Render Charts when document is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // State Chart
+            const stateCtx = document.getElementById('stateChart').getContext('2d');
+            new Chart(stateCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(stateData),
+                    datasets: [{
+                        label: 'Registros',
+                        data: Object.values(stateData),
+                        backgroundColor: '#222F58',
+                        borderColor: '#222F58',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Source Chart
+            const sourceCtx = document.getElementById('sourceChart').getContext('2d');
+            new Chart(sourceCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(sourceData),
+                    datasets: [{
+                        data: Object.values(sourceData),
+                        backgroundColor: [
+                            '#E1306C', // Instagram
+                            '#1877F2', // Facebook
+                            '#000000', // TikTok / X
+                            '#25D366', // WhatsApp
+                            '#0A66C2', // LinkedIn
+                            '#FF0000', // YouTube
+                            '#6c757d', // Gray for others
+                            '#ffc107', // Warning
+                            '#17a2b8'  // Info
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        });
+
         $(document).ready(function() {
             // Initialize DataTables
             $('#ordersTable').DataTable({
@@ -1079,7 +1599,7 @@ try {
                 responsive: true
             });
             $('#webinarTable').DataTable({
-                order: [[0, 'asc']],
+                order: [[5, 'desc']],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
                 },
@@ -1432,6 +1952,33 @@ try {
             `;
             
             $('#customerModalBody').html(modalContent);
+        }
+
+        async function copyWebinarLink(button) {
+            const input = button.closest('.input-group')?.querySelector('input');
+            const text = input ? input.value : '';
+            if (!text) return;
+
+            try {
+                await navigator.clipboard.writeText(text);
+            } catch (e) {
+                if (input) {
+                    input.focus();
+                    input.select();
+                    document.execCommand('copy');
+                    input.setSelectionRange(0, 0);
+                    input.blur();
+                }
+            }
+
+            const icon = button.querySelector('i');
+            if (icon) {
+                const original = icon.className;
+                icon.className = 'fas fa-check';
+                setTimeout(() => {
+                    icon.className = original;
+                }, 900);
+            }
         }
     </script>
 </body>
