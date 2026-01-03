@@ -174,12 +174,13 @@ if (isset($_GET['export']) && $_GET['export'] === 'webinar') {
             $sourceLabel = $source === '' ? '' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($row['utm_source'] ?? ''));
             $lada = webinarExtractLada($row['numero_telefono'] ?? '');
             $state = webinarMexicoStateFromLada($lada);
+            $stateLabel = $state === '' ? 'Sin Informacion' : $state;
 
             $sheet->setCellValueExplicit("A{$rowIndex}", (string)($row['nombre_completo'] ?? ''), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $sheet->setCellValueExplicit("B{$rowIndex}", (string)($row['correo_electronico'] ?? ''), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $sheet->setCellValueExplicit("C{$rowIndex}", (string)($row['numero_telefono'] ?? ''), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $sheet->setCellValueExplicit("D{$rowIndex}", (string)$sourceLabel, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit("E{$rowIndex}", (string)$state, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit("E{$rowIndex}", (string)$stateLabel, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $sheet->setCellValueExplicit("F{$rowIndex}", (string)($row['created_at'] ?? ''), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $rowIndex++;
         }
@@ -204,9 +205,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'webinar') {
     fputcsv($out, ['Nombre completo', 'Correo electrónico', 'Número de teléfono', 'Red Social', 'Estado', 'Fecha registro'], ';');
     foreach ($rows as $row) {
         $source = strtolower(trim((string)($row['utm_source'] ?? '')));
-        $sourceLabel = $source === '' ? '' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($row['utm_source'] ?? ''));
+        $sourceLabel = $source === '' ? 'Link Directo' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($row['utm_source'] ?? ''));
         $lada = webinarExtractLada($row['numero_telefono'] ?? '');
         $state = webinarMexicoStateFromLada($lada);
+        $stateLabel = $state === '' ? 'Sin Informacion' : $state;
         fputcsv(
             $out,
             [
@@ -214,7 +216,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'webinar') {
                 $csvSafe($row['correo_electronico'] ?? ''),
                 $csvSafe($row['numero_telefono'] ?? ''),
                 $csvSafe($sourceLabel),
-                $csvSafe($state),
+                $csvSafe($stateLabel),
                 $csvSafe($row['created_at'] ?? ''),
             ],
             ';'
@@ -335,7 +337,7 @@ try {
 
         // Source logic
         $source = strtolower(trim((string)($w['utm_source'] ?? '')));
-        $sourceLabel = $source === '' ? 'Sin Informacion' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($w['utm_source'] ?? ''));
+        $sourceLabel = $source === '' ? 'Link Directo' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($w['utm_source'] ?? ''));
         if (!isset($sourceCounts[$sourceLabel])) $sourceCounts[$sourceLabel] = 0;
         $sourceCounts[$sourceLabel]++;
     }
@@ -1266,12 +1268,13 @@ try {
                                             <td><?php echo htmlspecialchars($w['numero_telefono']); ?></td>
                                             <?php
                                                 $source = strtolower(trim((string)($w['utm_source'] ?? '')));
-                                                $sourceLabel = $source === '' ? '' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($w['utm_source'] ?? ''));
+                                                $sourceLabel = $source === '' ? 'Link Directo' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($w['utm_source'] ?? ''));
                                                 $lada = webinarExtractLada($w['numero_telefono'] ?? '');
                                                 $state = webinarMexicoStateFromLada($lada);
+                                                $stateLabel = $state === '' ? 'Sin Informacion' : $state;
                                             ?>
                                             <td><?php echo htmlspecialchars($sourceLabel); ?></td>
-                                            <td><?php echo htmlspecialchars($state); ?></td>
+                                            <td><?php echo htmlspecialchars($stateLabel); ?></td>
                                             <td><small class="text-muted"><?php echo htmlspecialchars($w['created_at'] ?? ''); ?></small></td>
                                         </tr>
                                         <?php endforeach; ?>
