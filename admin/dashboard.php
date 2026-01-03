@@ -138,22 +138,75 @@ if (isset($_GET['export']) && $_GET['export'] === 'webinar') {
         return $value;
     };
 
+    $format = strtolower((string)($_GET['format'] ?? 'xlsx'));
+    $canXlsx = false;
+    if ($format === 'xlsx') {
+        $autoload = __DIR__ . '/../vendor/autoload.php';
+        if (file_exists($autoload) && extension_loaded('zip')) {
+            require_once $autoload;
+            if (class_exists('\\PhpOffice\\PhpSpreadsheet\\Spreadsheet')) {
+                $canXlsx = true;
+            }
+        }
+    }
+
+    if ($format === 'xlsx' && $canXlsx) {
+        $filename = 'webinar_' . date('Y-m-d_H-i-s') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Webinar');
+
+        $sheet->setCellValue('A1', 'Nombre completo');
+        $sheet->setCellValue('B1', 'Correo electrónico');
+        $sheet->setCellValue('C1', 'Número de teléfono');
+        $sheet->setCellValue('D1', 'Red Social');
+        $sheet->setCellValue('E1', 'Estado');
+        $sheet->setCellValue('F1', 'Fecha registro');
+
+        $rowIndex = 2;
+        foreach ($rows as $row) {
+            $source = strtolower(trim((string)($row['utm_source'] ?? '')));
+            $sourceLabel = $source === '' ? '' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($row['utm_source'] ?? ''));
+            $lada = webinarExtractLada($row['numero_telefono'] ?? '');
+            $state = webinarMexicoStateFromLada($lada);
+
+            $sheet->setCellValueExplicit("A{$rowIndex}", (string)($row['nombre_completo'] ?? ''), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit("B{$rowIndex}", (string)($row['correo_electronico'] ?? ''), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit("C{$rowIndex}", (string)($row['numero_telefono'] ?? ''), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit("D{$rowIndex}", (string)$sourceLabel, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit("E{$rowIndex}", (string)$state, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit("F{$rowIndex}", (string)($row['created_at'] ?? ''), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $rowIndex++;
+        }
+
+        foreach (['A','B','C','D','E','F'] as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
     $filename = 'webinar_' . date('Y-m-d_H-i-s') . '.csv';
     header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
     header('Pragma: no-cache');
     header('Expires: 0');
-
     echo "\xEF\xBB\xBF";
+    echo "sep=;\n";
     $out = fopen('php://output', 'w');
     fputcsv($out, ['Nombre completo', 'Correo electrónico', 'Número de teléfono', 'Red Social', 'Estado', 'Fecha registro'], ';');
-
     foreach ($rows as $row) {
         $source = strtolower(trim((string)($row['utm_source'] ?? '')));
         $sourceLabel = $source === '' ? '' : (in_array($source, ['ig', 'instagram', 'insta'], true) ? 'Instagram' : (string)($row['utm_source'] ?? ''));
         $lada = webinarExtractLada($row['numero_telefono'] ?? '');
         $state = webinarMexicoStateFromLada($lada);
-
         fputcsv(
             $out,
             [
@@ -167,7 +220,6 @@ if (isset($_GET['export']) && $_GET['export'] === 'webinar') {
             ';'
         );
     }
-
     fclose($out);
     exit;
 }
