@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,44 @@
     <link rel="shortcut icon" href="Img/Logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root { --banner-h: 40px; }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
+        .promo-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--banner-h);
+            background: linear-gradient(135deg, #222F58 0%, #1a233e 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            z-index: 9999;
+        }
+        .promo-track {
+            display: inline-block;
+            white-space: nowrap;
+            will-change: transform;
+            animation: promoScroll 20s linear infinite;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-size: 14px;
+        }
+        .promo-track span {
+            margin: 0 24px;
+        }
+        @keyframes promoScroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+        .promo-banner { transition: transform .25s ease, opacity .25s ease; }
+        body.banner-hidden .promo-banner { transform: translateY(-100%); opacity: 0; pointer-events: none; }
 
         body {
             font-family: 'Montserrat', sans-serif;
@@ -22,6 +56,9 @@
             line-height: 1.6;
             min-height: 100vh;
         }
+        body { padding-top: calc(4rem + var(--banner-h)); }
+        body.banner-hidden .promo-banner { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        body.banner-hidden { padding-top: 4rem; }
 
         .checkout-container {
             max-width: 1000px;
@@ -231,7 +268,7 @@
         .payment-buttons {
             margin-top: 2rem;
         }
-        
+
         .payment-button {
             width: 100%;
             padding: 1rem;
@@ -244,36 +281,40 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            transition: all 0.5s ease; /* Transición más suave */
+            transition: all 0.5s ease;
+            /* Transición más suave */
             margin-bottom: 1rem;
-            opacity: 1; /* Para la transición */
-            transform: translateY(0); /* Para la transición */
+            opacity: 1;
+            /* Para la transición */
+            transform: translateY(0);
+            /* Para la transición */
         }
-        
+
         .stripe-button {
             background: #222F58;
             color: white;
         }
-        
+
         .stripe-button:hover {
             background: #1a233f;
             transform: translateY(-2px);
         }
-        
+
         .card-button {
             background: #28a745;
             color: white;
-            margin-top: 2rem; /* Más espacio por defecto */
+            margin-top: 2rem;
+            /* Más espacio por defecto */
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.5s ease;
         }
-        
+
         .card-button:hover {
             background: #218838;
             transform: translateY(-2px);
         }
-        
+
         .card-button:disabled {
             background: #6c757d;
             cursor: not-allowed;
@@ -285,7 +326,7 @@
             transform: scale(0.9) translateY(-10px);
             pointer-events: none;
         }
-        
+
         .card-button.show {
             opacity: 1;
             transform: translateY(0);
@@ -294,10 +335,11 @@
         .stripe-button.disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            background: #222F58; /* Color principal de la marca */
+            background: #222F58;
+            /* Color principal de la marca */
             pointer-events: none;
         }
-        
+
         .stripe-button.disabled:hover {
             background: #222F58;
             transform: none;
@@ -309,7 +351,7 @@
             background: #222F58;
             pointer-events: none;
         }
-        
+
         .stripe-button:disabled:hover {
             background: #222F58;
             transform: none;
@@ -374,7 +416,7 @@
             body {
                 padding: 3rem 1.5rem;
             }
-            
+
             .checkout-container {
                 flex-direction: column;
                 gap: 3rem;
@@ -383,7 +425,51 @@
         }
     </style>
 </head>
+
 <body>
+    <div class="promo-banner">
+        <div class="promo-track">
+            <!-- contenido dinámico -->
+        </div>
+    </div>
+    <script>
+        // Configuración dinámica del banner desde la base de datos
+        (function configureBanner() {
+            const bannerEl = document.querySelector('.promo-banner');
+            const trackEl = document.querySelector('.promo-track');
+            fetch('get_banner_settings.php')
+                .then(r => r.json())
+                .then(data => {
+                    const enabled = !!data.enabled;
+                    const text = (data.text || 'CODIGO DE DESCUENTO : CAPITAN26').toUpperCase();
+                    if (!enabled) {
+                        document.documentElement.style.setProperty('--banner-h', '0px');
+                        if (bannerEl) bannerEl.style.display = 'none';
+                        document.body.classList.add('banner-hidden');
+                    } else {
+                        document.documentElement.style.setProperty('--banner-h', '40px');
+                        if (bannerEl) bannerEl.style.display = 'flex';
+                        if (trackEl) {
+                            const spans = new Array(8).fill(0).map(() => `<span>${text}</span>`).join('');
+                            trackEl.innerHTML = spans;
+                        }
+                        document.body.classList.remove('banner-hidden');
+                    }
+                })
+                .catch(() => {});
+        })();
+        (function() {
+            function update() {
+                if (window.scrollY > 80) {
+                    document.body.classList.add('banner-hidden');
+                } else {
+                    document.body.classList.remove('banner-hidden');
+                }
+            }
+            window.addEventListener('scroll', update, { passive: true });
+            update();
+        })();
+    </script>
     <div class="checkout-container">
         <!-- Resumen del Pedido -->
         <div class="order-summary">
@@ -391,35 +477,58 @@
                 <h2>Resumen del Pedido</h2>
             </div>
 
-                            <div class="product-item">
-                    <div class="product-image">
-                        <img src="Img/Logo.png" alt="Capitán Financiero" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 12px rgba(34, 47, 88, 0.15);">
-                    </div>
-                    <div class="product-details">
-                        <h3>Programa de "Alineación Financiera I"</h3>
-                        <div class="product-price">$4,650.00 MXN</div>
-                        <div class="product-meta">Cantidad: 1</div>
-                    <div class="product-benefits" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #f8f9fa;">
-                        <div style="color: #4E5979; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Incluye:</div>
-                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #6c757d; line-height: 1.4;">
+            <div class="product-item">
+                <div class="product-image">
+                    <img src="Img/Logo.png" alt="Capitán Financiero"
+                        style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 12px rgba(34, 47, 88, 0.15);">
+                </div>
+                <div class="product-details">
+                    <h3>Los 6 pasos para tu Independencia Financiera</h3>
+                    <div class="product-price">$4,650.00 MXN</div>
+                    <div class="product-meta">Cantidad: 1</div>
+                    <div class="product-benefits"
+                        style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #f8f9fa;">
+                        <div style="color: #4E5979; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">
+                            Incluye:</div>
+                        <ul
+                            style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #6c757d; line-height: 1.4;">
                             <li style="margin-bottom: 0.25rem;">• 6 cursos impartidos por expertos</li>
                             <li style="margin-bottom: 0.25rem;">• Diploma incluido</li>
                             <li style="margin-bottom: 0.25rem;">• Material por cada curso</li>
                             <li style="margin-bottom: 0.25rem;">• Acceso a la comunidad de Capitán Financiero</li>
                         </ul>
                     </div>
-                    
-                    <div class="product-curriculum" style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #f8f9fa;">
-                        <div style="color: #4E5979; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Temario:</div>
-                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #6c757d; line-height: 1.4;">
-                            <li style="margin-bottom: 0.25rem;">1. Mitos de la inversión</li>
-                            <li style="margin-bottom: 0.25rem;">2. ¿Cómo salir de deudas?</li>
-                            <li style="margin-bottom: 0.25rem;">3. Abundancia y pensamiento holístico </li>
-                            <li style="margin-bottom: 0.25rem;">4. ¿Por qué administrarme?</li>
-                            <li style="margin-bottom: 0.25rem;">5. ¿Cómo me preparo para invertir?</li>
-                            <li style="margin-bottom: 0.25rem;">6. Bienes Raíces</li>
+
+                    <div class="product-curriculum"
+                        style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #f8f9fa;">
+                        <div style="color: #4E5979; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">
+                            Temario:</div>
+                        <ul
+                            style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #6c757d; line-height: 1.4;">
+                            <li style="margin-bottom: 0.25rem;">1. Lo que nadie te dijo de invertir</li>
+                            <li style="margin-bottom: 0.25rem;">2. El precio del éxito</li>
+                            <li style="margin-bottom: 0.25rem;">3. El método para eliminar tus deudas</li>
+                            <li style="margin-bottom: 0.25rem;">4. La ley de atracción del dinero</li>
+                            <li style="margin-bottom: 0.25rem;">5. Dirige tu dinero como un capitán</li>
+                            <li style="margin-bottom: 0.25rem;">6. Mi debut como inversionista</li>
                         </ul>
                     </div>
+                </div>
+            </div>
+
+            <!-- Código de Descuento -->
+            <div class="discount-section" style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e9ecef;">
+                <div style="margin-bottom: 1rem;">
+                    <label for="discount-code"
+                        style="display: block; margin-bottom: 0.5rem; color: #495057; font-weight: 500; font-size: 0.95rem;">Código
+                        de Descuento</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="discount-code" placeholder="Ingresa tu código"
+                            style="flex: 1; padding: 12px 16px; border: 1px solid #dee2e6; border-radius: 8px; font-size: 1rem; text-transform: uppercase;">
+                        <button type="button" id="apply-discount"
+                            style="padding: 12px 24px; background: #222F58; color: white; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s ease;">Aplicar</button>
+                    </div>
+                    <div id="discount-message" style="margin-top: 0.5rem; font-size: 0.85rem; min-height: 20px;"></div>
                 </div>
             </div>
 
@@ -427,6 +536,10 @@
                 <div class="total-row">
                     <span>Subtotal:</span>
                     <span id="subtotal">$4,650.00 MXN</span>
+                </div>
+                <div class="total-row" id="discount-row" style="display: none; color: #28a745;">
+                    <span>Descuento:</span>
+                    <span id="discount-amount">-$0.00 MXN</span>
                 </div>
                 <div class="total-row final">
                     <span>Total:</span>
@@ -450,7 +563,7 @@
                 <input type="hidden" id="utm_term" name="utm_term">
                 <input type="hidden" id="referrer" name="referrer">
                 <input type="hidden" id="landing_page" name="landing_page">
-                
+
                 <div class="form-group">
                     <label for="name">Nombre Completo</label>
                     <input type="text" id="name" name="name" required>
@@ -468,11 +581,13 @@
 
                 <div class="form-group">
                     <label for="address">Dirección de Facturación</label>
-                    <textarea id="address" name="address" rows="3" placeholder="Calle, número, colonia, ciudad, estado, código postal"></textarea>
+                    <textarea id="address" name="address" rows="3"
+                        placeholder="Calle, número, colonia, ciudad, estado, código postal"></textarea>
                 </div>
 
                 <div class="privacy-notice">
-                    Al comprar acepto el <a href="aviso-privacidad.html" target="_blank">Aviso de privacidad</a> de Capitán Financiero
+                    Al comprar acepto el <a href="aviso-privacidad.html" target="_blank">Aviso de privacidad</a> de
+                    Capitán Financiero
                 </div>
 
                 <!-- Botones de pago -->
@@ -481,7 +596,7 @@
                         <i class="fab fa-stripe"></i>
                         <span>Pagar con Stripe</span>
                     </button>
-                    
+
                     <!-- El botón de tarjeta se mostrará dinámicamente -->
                     <button type="button" id="card-button" class="payment-button card-button" style="display: none;">
                         <i class="fas fa-lock"></i>
@@ -500,30 +615,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
     <script src="checkout.js"></script>
-    
+
     <script>
         // Variable global para el selector de teléfono
         let globalIti;
-        
+
         // Función para capturar UTM parameters de la URL
         function captureUTMParameters() {
             console.log('Search params:', window.location.search);
-            
+
             const urlParams = new URLSearchParams(window.location.search);
             const referrer = document.referrer;
             const currentPage = window.location.href;
-            
+
             console.log('URL Search Params:', urlParams);
             console.log('Referrer:', referrer);
             console.log('Current Page:', currentPage);
-            
+
             // Capturar UTM parameters desde URL primero
             let utm_source = urlParams.get('utm_source') || '';
             let utm_medium = urlParams.get('utm_medium') || '';
             let utm_campaign = urlParams.get('utm_campaign') || '';
             let utm_content = urlParams.get('utm_content') || '';
             let utm_term = urlParams.get('utm_term') || '';
-            
+
             // Si no hay UTM en la URL, intentar obtenerlos del localStorage
             if (!utm_source && !utm_medium && !utm_campaign) {
                 const storedUTM = localStorage.getItem('capitanFinancieroUTM');
@@ -531,14 +646,14 @@
                     try {
                         const utmData = JSON.parse(storedUTM);
                         console.log('📱 UTM parameters encontrados en localStorage:', utmData);
-                        
+
                         // Usar los valores del localStorage si no están en la URL
                         utm_source = utm_source || utmData.utm_source || '';
                         utm_medium = utm_medium || utmData.utm_medium || '';
                         utm_campaign = utm_campaign || utmData.utm_campaign || '';
                         utm_content = utm_content || utmData.utm_content || '';
                         utm_term = utm_term || utmData.utm_term || '';
-                        
+
                         console.log('🔄 UTM parameters combinados (URL + localStorage):', {
                             utm_source,
                             utm_medium,
@@ -551,7 +666,7 @@
                     }
                 }
             }
-            
+
             console.log('UTM Parameters finales:', {
                 utm_source,
                 utm_medium,
@@ -559,7 +674,7 @@
                 utm_content,
                 utm_term
             });
-            
+
             // Asignar valores a los campos ocultos
             document.getElementById('utm_source').value = utm_source;
             document.getElementById('utm_medium').value = utm_medium;
@@ -568,7 +683,7 @@
             document.getElementById('utm_term').value = utm_term;
             document.getElementById('referrer').value = referrer;
             document.getElementById('landing_page').value = currentPage;
-            
+
             // Guardar UTM parameters en localStorage para que estén disponibles después de la redirección
             const utmData = {
                 utm_source,
@@ -581,12 +696,12 @@
             };
             localStorage.setItem('capitanFinancieroUTM', JSON.stringify(utmData));
             console.log('💾 UTM parameters guardados en localStorage:', utmData);
-            
+
             // Registrar la visita UTM si no se ha registrado antes
             if (utm_source || utm_medium || utm_campaign) {
                 registerUTMVisitIfNeeded(utmData);
             }
-            
+
             console.log('✅ Campos ocultos actualizados:');
             console.log('utm_source field:', document.getElementById('utm_source').value);
             console.log('utm_medium field:', document.getElementById('utm_medium').value);
@@ -596,14 +711,14 @@
             console.log('referrer field:', document.getElementById('referrer').value);
             console.log('landing_page field:', document.getElementById('landing_page').value);
         }
-        
+
         // Inicializar el selector de teléfono
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Capturar UTM parameters al cargar la página
             captureUTMParameters();
-            
+
             const phoneInput = document.getElementById('phone');
-            
+
             // Inicializar intl-tel-input
             globalIti = window.intlTelInput(phoneInput, {
                 initialCountry: 'mx', // México por defecto
@@ -614,19 +729,19 @@
                 autoHideDialCode: false,
                 autoPlaceholder: 'polite'
             });
-            
+
             // Actualizar el placeholder con el código de país
             phoneInput.placeholder = globalIti.getSelectedCountryData().dialCode;
-            
+
             // Actualizar placeholder cuando cambie el país
-            phoneInput.addEventListener('countrychange', function() {
+            phoneInput.addEventListener('countrychange', function () {
                 const countryData = globalIti.getSelectedCountryData();
                 phoneInput.placeholder = countryData.dialCode;
             });
-            
+
             console.log('intl-tel-input inicializado:', globalIti);
         });
-        
+
         // Función global para obtener el número completo
         function getFullPhoneNumber() {
             if (globalIti) {
@@ -638,26 +753,26 @@
                 return document.getElementById('phone').value;
             }
         }
-        
+
         // Función para registrar la visita UTM si no se ha registrado antes
         function registerUTMVisitIfNeeded(utmData) {
             // Crear una clave única para esta visita UTM
             const visitKey = `utm_visit_${utmData.utm_source}_${utmData.utm_medium}_${utmData.utm_campaign}`;
-            
+
             // Verificar si ya se registró esta visita
             if (localStorage.getItem(visitKey)) {
                 console.log('🔄 Visita UTM ya registrada anteriormente');
                 return;
             }
-            
+
             // Verificar si ya se registró en la página anterior
             const storedUTM = localStorage.getItem('capitanFinancieroUTM');
             if (storedUTM) {
                 try {
                     const storedData = JSON.parse(storedUTM);
                     // Si los parámetros UTM son idénticos, no registrar duplicado
-                    if (storedData.utm_source === utmData.utm_source && 
-                        storedData.utm_medium === utmData.utm_medium && 
+                    if (storedData.utm_source === utmData.utm_source &&
+                        storedData.utm_medium === utmData.utm_medium &&
                         storedData.utm_campaign === utmData.utm_campaign) {
                         console.log('🔄 Visita UTM ya registrada en página anterior, saltando...');
                         return;
@@ -666,7 +781,7 @@
                     console.error('Error al verificar UTM almacenado:', error);
                 }
             }
-            
+
             const params = new URLSearchParams({
                 utm_source: utmData.utm_source,
                 utm_medium: utmData.utm_medium,
@@ -675,7 +790,7 @@
                 utm_term: utmData.utm_term,
                 landing_page: utmData.landing_page
             });
-            
+
             // Hacer petición al servidor para registrar la visita
             fetch('track_visit.php?' + params.toString(), {
                 method: 'GET',
@@ -683,21 +798,22 @@
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('✅ Visita UTM registrada exitosamente desde checkout:', data);
-                    // Marcar como registrada para evitar duplicados
-                    localStorage.setItem(visitKey, 'true');
-                } else {
-                    console.warn('⚠️ Error al registrar visita UTM desde checkout:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('❌ Error al registrar visita UTM desde checkout:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('✅ Visita UTM registrada exitosamente desde checkout:', data);
+                        // Marcar como registrada para evitar duplicados
+                        localStorage.setItem(visitKey, 'true');
+                    } else {
+                        console.warn('⚠️ Error al registrar visita UTM desde checkout:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Error al registrar visita UTM desde checkout:', error);
+                });
         }
     </script>
-    
+
 </body>
+
 </html>

@@ -293,7 +293,7 @@ body {
     height: 100vh;
     background-color: white;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-    z-index: 2000;
+    z-index: 10000;
     transition: right 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -446,7 +446,7 @@ body {
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 3000;
+    z-index: 10000;
     display: none;
     align-items: center;
     justify-content: center;
@@ -6073,5 +6073,4 @@ footer p a {
         display: none;
     }
 }
-
 

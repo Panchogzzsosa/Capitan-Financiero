@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once('../config.php');
+require_once('../vendor/autoload.php');
+require_once('../vendor/autoload.php');
+\Stripe\Stripe::setApiKey(STRIPE_SECRET_KEY);
 
 // Check if user is logged in
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -8,6 +11,62 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit;
 }
 
+\Stripe\Stripe::setApiKey(STRIPE_SECRET_KEY);
+
+// ===== Banner Settings (create table, load, save) =====
+try {
+    $pdo = getDBConnection();
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS site_settings (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            banner_enabled TINYINT(1) NOT NULL DEFAULT 1,
+            banner_text VARCHAR(255) NOT NULL DEFAULT 'CODIGO DE DESCUENTO : CAPITAN26',
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )
+    ");
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_banner'])) {
+        $enabled = isset($_POST['banner_enabled']) ? 1 : 0;
+        $text = trim((string)($_POST['banner_text'] ?? ''));
+        if ($text === '') { $text = 'CODIGO DE DESCUENTO : CAPITAN26'; }
+        $exists = $pdo->query("SELECT COUNT(*) AS c FROM site_settings")->fetch();
+        if (($exists['c'] ?? 0) > 0) {
+            $stmt = $pdo->prepare("UPDATE site_settings SET banner_enabled = ?, banner_text = ? WHERE id = 1");
+            $stmt->execute([$enabled, $text]);
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO site_settings (id, banner_enabled, banner_text) VALUES (1, ?, ?)");
+            $stmt->execute([$enabled, $text]);
+        }
+        $banner_saved = true;
+    }
+    $settings = $pdo->query("SELECT * FROM site_settings WHERE id = 1")->fetch();
+    $banner_enabled = $settings ? (int)$settings['banner_enabled'] === 1 : true;
+    $banner_text = $settings ? (string)$settings['banner_text'] : 'CODIGO DE DESCUENTO : CAPITAN26';
+} catch (Exception $e) {
+    $banner_enabled = true;
+    $banner_text = 'CODIGO DE DESCUENTO : CAPITAN26';
+}
+function stripeOrderIsInstallments($paymentIntentId) {
+    static $cache = [];
+    $id = (string)$paymentIntentId;
+    if ($id === '') return false;
+    if (isset($cache[$id])) return $cache[$id];
+    try {
+        $pi = \Stripe\PaymentIntent::retrieve($id);
+        $is = false;
+        if ($pi && $pi->charges && $pi->charges->data && count($pi->charges->data) > 0) {
+            $charge = $pi->charges->data[0];
+            $details = $charge->payment_method_details;
+            if ($details && $details->card && $details->card->installments && $details->card->installments->plan) {
+                $is = true;
+            }
+        }
+        $cache[$id] = $is;
+        return $is;
+    } catch (\Exception $e) {
+        $cache[$id] = false;
+        return false;
+    }
+}
 function webinarNormalizePhoneDigits($phone) {
     $digits = preg_replace('/\D+/', '', (string)$phone);
     $digits = ltrim($digits, '0');
@@ -114,6 +173,39 @@ function webinarMexicoStateFromLada($lada) {
     ];
 
     return $threeDigitStates[$lada] ?? '';
+}
+
+$installmentsCache = [];
+function stripeUsesInstallments($paymentIntentId) {
+    global $installmentsCache;
+    $pid = (string)$paymentIntentId;
+    if ($pid === '') return false;
+    if (array_key_exists($pid, $installmentsCache)) return $installmentsCache[$pid];
+    try {
+        $pi = \Stripe\PaymentIntent::retrieve($pid);
+        $hasCharges = isset($pi->charges) && isset($pi->charges->data) && is_array($pi->charges->data) && count($pi->charges->data) > 0;
+        $charge = $hasCharges ? $pi->charges->data[0] : null;
+        $details = $charge && isset($charge->payment_method_details) ? $charge->payment_method_details : null;
+        $card = $details && isset($details->card) ? $details->card : null;
+        $installments = $card && isset($card->installments) ? $card->installments : null;
+        $isInstallments = ($installments && isset($installments->plan) && $installments->plan) ? true : false;
+        $installmentsCache[$pid] = $isInstallments;
+        return $isInstallments;
+    } catch (\Exception $e) {
+        $installmentsCache[$pid] = false;
+        return false;
+    }
+}
+
+function computeNetAmountForOrder($order) {
+    $totalCents = isset($order['total_amount_cents']) ? (int)$order['total_amount_cents'] : (int)round(((float)$order['total_amount']) * 100);
+    $pid = isset($order['stripe_payment_intent_id']) ? (string)$order['stripe_payment_intent_id'] : '';
+    $isInstallments = stripeUsesInstallments($pid);
+    $percent = $isInstallments ? 0.086 : 0.036;
+    $feeCents = (int)round($totalCents * $percent) + 300;
+    $netCents = $totalCents - $feeCents;
+    if ($netCents < 0) $netCents = 0;
+    return $netCents / 100.0;
 }
 
 if (isset($_GET['export']) && $_GET['export'] === 'webinar') {
@@ -350,6 +442,10 @@ try {
     $total_customers = $pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn();
     $total_orders = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
     $total_revenue = $pdo->query("SELECT SUM(total_amount) FROM orders WHERE status = 'completed'")->fetchColumn();
+    $net_revenue = 0.0;
+    foreach ($orders as $o) {
+        $net_revenue += computeNetAmountForOrder($o);
+    }
     $total_subscribers = $pdo->query("SELECT COUNT(*) FROM subscribers")->fetchColumn();
     $total_utm_visits = $pdo->query("SELECT COUNT(DISTINCT user_fingerprint) FROM traffic_tracking WHERE utm_source IS NOT NULL OR utm_medium IS NOT NULL OR utm_campaign IS NOT NULL")->fetchColumn();
     $utm_conversions = $pdo->query("SELECT COUNT(DISTINCT tt.user_fingerprint) FROM traffic_tracking tt JOIN orders o ON tt.order_id = o.id WHERE (tt.utm_source IS NOT NULL OR tt.utm_medium IS NOT NULL OR tt.utm_campaign IS NOT NULL)")->fetchColumn();
@@ -421,16 +517,20 @@ try {
         }
 
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 1rem;
-            margin-bottom: 3rem;
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .stat-card {
+            width: 190px;
             background: white;
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1rem;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             border: 1px solid #e9ecef;
             transition: all 0.3s ease;
@@ -442,7 +542,7 @@ try {
         }
 
         .stat-card h3 {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 600;
             color: #222F58;
             margin-bottom: 0.5rem;
@@ -455,7 +555,7 @@ try {
         }
 
         .stat-card .icon {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #223058;
             margin-bottom: 1rem;
         }
@@ -463,16 +563,35 @@ try {
         .nav-tabs {
             border: none;
             margin-bottom: 2rem;
+            flex-wrap: nowrap;
+            gap: 0.25rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            justify-content: center;
         }
 
         .nav-tabs .nav-link {
             border: none;
             color: #6c757d;
             font-weight: 500;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            margin-right: 0.5rem;
+            padding: 0.65rem 1rem;
+            font-size: 0.95rem;
+            border-radius: 6px;
+            margin-right: 0.25rem;
             transition: all 0.3s ease;
+        }
+        .nav-tabs .nav-link i {
+            font-size: 1rem;
+            margin-right: 0.35rem;
+        }
+        @media (max-width: 768px) {
+            .nav-tabs .nav-link {
+                padding: 0.55rem 0.85rem;
+                font-size: 0.9rem;
+            }
+            .nav-tabs .nav-link i {
+                font-size: 0.95rem;
+            }
         }
 
         .nav-tabs .nav-link:hover {
@@ -720,6 +839,13 @@ try {
             </div>
             <div class="stat-card">
                 <div class="icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <h3>$<?php echo number_format($net_revenue ?? 0, 2); ?></h3>
+                <p>Ingreso Neto (Stripe)</p>
+            </div>
+            <div class="stat-card">
+                <div class="icon">
                     <i class="fas fa-envelope"></i>
                 </div>
                 <h3><?php echo $total_subscribers ?? 0; ?></h3>
@@ -772,17 +898,47 @@ try {
                     <i class="fas fa-qrcode"></i> Generar QR
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
+            <li class="nav-item, role="presentation">
                 <button class="nav-link" id="webinar-tab" data-bs-toggle="tab" data-bs-target="#webinar" type="button">
                     <i class="fas fa-video"></i> Webinar
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button">
+                    <i class="fas fa-bullhorn"></i> Banner
                 </button>
             </li>
         </ul>
 
         <div class="tab-content" id="myTabContent">
+            <!-- Settings Tab -->
+            <div class="tab-pane fade" id="settings">
+                <div class="card mb-4">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0"><i class="fas fa-bullhorn"></i> Banner Promocional</h5>
+                        <?php if (!empty($banner_saved)): ?>
+                            <span class="badge bg-success">Guardado</span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="banner_enabled" name="banner_enabled" <?php echo $banner_enabled ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="banner_enabled">Mostrar banner en el sitio</label>
+                            </div>
+                            <div class="mb-3">
+                                <label for="banner_text" class="form-label">Texto del banner</label>
+                                <input type="text" class="form-control" id="banner_text" name="banner_text" value="<?php echo htmlspecialchars($banner_text); ?>" placeholder="Ingresa el texto del banner">
+                                <div class="form-text">Este texto se repetirá para el efecto de carrusel.</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" name="save_banner"><i class="fas fa-save"></i> Guardar cambios</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <!-- Orders Tab -->
             <div class="tab-pane fade show active" id="orders">
-                <table id="ordersTable" class="table">
+                <table id="ordersTable" class="table table-sm">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -791,8 +947,11 @@ try {
                             <th>Email</th>
                             <th>Teléfono</th>
                             <th>Total</th>
+                            <th>Neto (Stripe)</th>
+                            <th>MSI</th>
                             <th>Estado</th>
                             <th>Método de Pago</th>
+                            <th>Código de Descuento</th>
                             <th>Fecha</th>
                             <th>Acciones</th>
                         </tr>
@@ -807,11 +966,33 @@ try {
                             <td><?php echo htmlspecialchars($order['customer_phone']); ?></td>
                             <td><strong>$<?php echo number_format($order['total_amount'], 2); ?></strong></td>
                             <td>
+                                <?php
+                                    $netAmount = computeNetAmountForOrder($order);
+                                ?>
+                                <strong>$<?php echo number_format($netAmount, 2); ?></strong>
+                            </td>
+                            <td>
+                                <?php
+                                    $pid = isset($order['stripe_payment_intent_id']) ? (string)$order['stripe_payment_intent_id'] : '';
+                                    $isInstallments = stripeUsesInstallments($pid);
+                                ?>
+                                <span class="badge bg-<?php echo $isInstallments ? 'success' : 'secondary'; ?> status-badge">
+                                    <?php echo $isInstallments ? 'Sí' : 'No'; ?>
+                                </span>
+                            </td>
+                            <td>
                                 <span class="badge bg-<?php echo $order['status'] === 'completed' ? 'success' : ($order['status'] === 'pending' ? 'warning' : 'danger'); ?> status-badge">
                                     <?php echo ucfirst($order['status']); ?>
                                 </span>
                             </td>
                             <td><?php echo htmlspecialchars($order['payment_method']); ?></td>
+                            <td>
+                                <?php if (!empty($order['discount_code'])): ?>
+                                    <span class="badge bg-info"><?php echo htmlspecialchars($order['discount_code']); ?></span>
+                                <?php else: ?>
+                                    <span class="text-muted">N/A</span>
+                                <?php endif; ?>
+                            </td>
                             <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
                             <td>
                                 <button class="btn btn-info btn-sm" onclick="viewOrderDetails(<?php echo $order['id']; ?>)">
@@ -1181,7 +1362,7 @@ try {
                 <div class="text-center">
                     <div class="mb-4">
                         <h4><i class="fas fa-qrcode"></i> Generador de Código QR</h4>
-                        <p class="text-muted">Genera un código QR que lleva directamente al carrito con el producto "Programa de Alineación Financiera I"</p>
+                        <p class="text-muted">Genera un código QR que lleva directamente al carrito con el producto "Los 6 pasos para tu Independencia Financiera"</p>
                     </div>
                     
                     <a href="generate_qr.php" class="btn btn-outline-primary btn-md">
@@ -1733,6 +1914,12 @@ try {
             const items = data.items;
             const payment = data.payment;
             
+            const discountCents = order.discount_amount_cents ? parseInt(order.discount_amount_cents, 10) : null;
+            const discountAmount = discountCents ? (discountCents / 100) : (order.discount_amount ? parseFloat(order.discount_amount) : null);
+            const discountCode = order.discount_code || '';
+            const totalCents = order.total_amount_cents ? parseInt(order.total_amount_cents, 10) : Math.round(parseFloat(order.total_amount) * 100);
+            const subtotalCents = discountAmount != null ? (totalCents + Math.round(discountAmount * 100)) : null;
+            
             let modalContent = `
                 <div class="row">
                     <div class="col-md-6">
@@ -1747,7 +1934,13 @@ try {
                             <strong>Teléfono:</strong> ${order.customer_phone}
                         </div>
                         <div class="mb-3">
-                            <strong>Dirección:</strong> ${order.customer_address}
+                            <strong>Método de Pago:</strong> ${order.payment_method}
+                        </div>
+                        <div class="mb-3">
+                            <strong>Código de Descuento:</strong> ${discountCode ? `<span class="badge bg-info">${discountCode}</span>` : '<span class="text-muted">N/A</span>'}
+                        </div>
+                        <div class="mb-3">
+                            <strong>Descuento Aplicado:</strong> ${discountAmount != null ? `<span class="text-success">-$${discountAmount.toFixed(2)} MXN</span>` : '<span class="text-muted">N/A</span>'}
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -1806,6 +1999,14 @@ try {
                 </div>
                 
                 <div class="text-end" style="margin-top: 0.5rem;">
+                    ${discountAmount != null ? `
+                        <div style="font-size: 0.95rem;">
+                            <span>Subtotal:</span> <strong>$${(subtotalCents / 100).toFixed(2)} MXN</strong>
+                        </div>
+                        <div style="font-size: 0.95rem; color: #28a745;">
+                            <span>Descuento:</span> <strong>-$${discountAmount.toFixed(2)} MXN</strong>
+                        </div>
+                    ` : ''}
                     <h5>Total: <strong>$${(order.total_amount_cents / 100).toFixed(2)} MXN</strong></h5>
                 </div>
             `;

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Variables globales para el carrito
     let cart = [];
     let cartTotal = 0;
@@ -16,32 +16,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (addToCart === '1' && productId && productName && productPrice) {
             console.log('Agregando producto al carrito...');
-            
+
             // Decodificar el nombre del producto
             const decodedName = decodeURIComponent(productName);
             console.log('Nombre decodificado:', decodedName);
-            
+
             // Agregar al carrito
             const parsedId = parseInt(productId);
             const parsedPrice = parseInt(productPrice);
             const fixedPrice = parsedId === 1 ? 4650 : parsedPrice;
             const product = { id: parsedId, name: decodedName, price: fixedPrice, quantity: 1 };
-            
+
             console.log('Producto a agregar:', product);
-            
+
             cart.push(product);
             updateCart();
-            
+
             // Mostrar mensaje de confirmación
             showToast(`Producto "${decodedName}" agregado al carrito`, 'success');
-            
+
             // También mostrar un mensaje en la consola para debug
             console.log(`✅ Producto "${decodedName}" agregado exitosamente al carrito`);
             console.log(`📊 Estado del carrito: ${cart.length} productos, Total: $${cartTotal} MXN`);
-            
+
             // Limpiar la URL
             window.history.replaceState({}, document.title, window.location.pathname);
-            
+
             // Abrir el carrito automáticamente
             setTimeout(() => {
                 if (cartOverlay) {
@@ -114,11 +114,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCart() {
         console.log('🔄 Actualizando carrito...');
         console.log('🛒 Estado del carrito:', cart);
-        
+
         // Guardar carrito en localStorage
         localStorage.setItem('capitanFinancieroCart', JSON.stringify(cart));
         console.log('💾 Carrito guardado en localStorage');
-        
+
         // Actualizar contador del carrito
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
         if (cartCount) {
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Funciones globales para el carrito (necesarias para los onclick)
-    window.updateQuantity = function(index, change) {
+    window.updateQuantity = function (index, change) {
         cart[index].quantity += change;
         if (cart[index].quantity <= 0) {
             cart.splice(index, 1);
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCart();
     };
 
-    window.removeFromCart = function(index) {
+    window.removeFromCart = function (index) {
         cart.splice(index, 1);
         updateCart();
     };
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Agregar al carrito
     const addToCartButtons = document.querySelectorAll('.add-to-cart-btn, .add-to-cart-minimal');
     addToCartButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const productId = this.getAttribute('data-product-id');
             const productName = this.getAttribute('data-product-name');
             const productPrice = parseInt(this.getAttribute('data-product-price'));
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             updateCart();
-            
+
             // Mostrar notificación
             showToast('Producto agregado al carrito', 'success');
         });
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showToast('Tu carrito está vacío', 'error');
                 return;
             }
-            
+
             // Redirigir a la página de checkout
             window.location.href = 'checkout.html';
         });
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCheckoutSummary() {
         const checkoutItems = document.getElementById('checkout-items');
         const checkoutTotal = document.getElementById('checkout-total');
-        
+
         checkoutItems.innerHTML = '';
         let total = 0;
 
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Procesar checkout
     if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function(e) {
+        checkoutForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
             const formData = {
@@ -308,50 +308,50 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(formData)
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error de conexión con el servidor');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    showToast(data.message, 'success');
-                    
-                    // Limpiar carrito
-                    cart = [];
-                    updateCart();
-                    
-                    // Cerrar checkout
-                    checkoutOverlay.classList.remove('active');
-                    checkoutForm.reset();
-                } else {
-                    showToast(data.message, 'error');
-                }
-            })
-            .catch(error => {
-                showToast(error.message || 'Error al procesar la orden. Por favor, intenta nuevamente.', 'error');
-            })
-            .finally(() => {
-                // Restaurar botón
-                payBtn.innerHTML = originalText;
-                payBtn.disabled = false;
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error de conexión con el servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message, 'success');
+
+                        // Limpiar carrito
+                        cart = [];
+                        updateCart();
+
+                        // Cerrar checkout
+                        checkoutOverlay.classList.remove('active');
+                        checkoutForm.reset();
+                    } else {
+                        showToast(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showToast(error.message || 'Error al procesar la orden. Por favor, intenta nuevamente.', 'error');
+                })
+                .finally(() => {
+                    // Restaurar botón
+                    payBtn.innerHTML = originalText;
+                    payBtn.disabled = false;
+                });
         });
     }
 
     // Función para mostrar notificaciones
     function showToast(message, type = 'info') {
         console.log('🍞 Mostrando toast:', { message, type });
-        
+
         const toastContainer = document.querySelector('.toast-container') || createToastContainer();
         console.log('🍞 Toast container encontrado:', toastContainer);
-        
+
         const toast = document.createElement('div');
         toast.classList.add('toast', type);
         toast.textContent = message;
         toastContainer.appendChild(toast);
-        
+
         console.log('🍞 Toast creado y agregado:', toast);
 
         setTimeout(() => {
@@ -370,15 +370,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Navegación suave
     const navLinks = document.querySelectorAll('.nav-menu a[href^="#"]');
     navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.getAttribute('href');
             const targetSection = document.querySelector(targetId);
-            
+
             if (targetSection) {
                 const headerHeight = document.querySelector('.main-header').offsetHeight;
                 const targetPosition = targetSection.offsetTop - headerHeight;
-                
+
                 window.scrollTo({
                     top: targetPosition,
                     behavior: 'smooth'
@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', () => {
         const header = document.querySelector('.main-header');
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
+
         if (scrollTop > lastScrollTop && scrollTop > 100) {
             // Scrolling down
             header.style.transform = 'translateY(-100%)';
@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Scrolling up
             header.style.transform = 'translateY(0)';
         }
-        
+
         lastScrollTop = scrollTop;
     });
 
@@ -420,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (migrated) {
                 localStorage.setItem('capitanFinancieroCart', JSON.stringify(cart));
             }
-            
+
             // Verificar si hay productos agregados via QR y mostrar notificación
             const qrProducts = cart.filter(item => item.addedViaQR);
             if (qrProducts.length > 0) {
@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cart = [];
         }
     }
-    
+
     // Inicializar carrito
     updateCart();
 
@@ -444,9 +444,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const ctaButton = document.querySelector('.header-button');
     const popupOverlay = document.querySelector('.popup-overlay');
     const closePopup = document.querySelector('.close-popup');
-    
+
     // Abrir popup automáticamente después de 30 segundos
-    setTimeout(function() {
+    setTimeout(function () {
         if (popupOverlay) {
             popupOverlay.style.display = 'flex';
         }
@@ -454,14 +454,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const infoForm = document.getElementById('info-form');
     const newsletterForms = document.querySelectorAll('#newsletter-form');
     const numeroInput = document.getElementById('numero');
-    
+
     // Add input validation for phone number
     if (numeroInput) {
-        numeroInput.addEventListener('input', function(e) {
+        numeroInput.addEventListener('input', function (e) {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
 
-        numeroInput.addEventListener('keypress', function(e) {
+        numeroInput.addEventListener('keypress', function (e) {
             if (!/[0-9]/.test(e.key)) {
                 e.preventDefault();
             }
@@ -469,17 +469,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (ctaButton && popupOverlay) {
-        ctaButton.addEventListener('click', function() {
+        ctaButton.addEventListener('click', function () {
             popupOverlay.style.display = 'flex';
         });
     }
 
     if (closePopup && popupOverlay) {
-        closePopup.addEventListener('click', function() {
+        closePopup.addEventListener('click', function () {
             popupOverlay.style.display = 'none';
         });
 
-        popupOverlay.addEventListener('click', function(e) {
+        popupOverlay.addEventListener('click', function (e) {
             if (e.target === popupOverlay) {
                 popupOverlay.style.display = 'none';
             }
@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle form submission
     if (infoForm) {
-        infoForm.addEventListener('submit', function(e) {
+        infoForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
             // Get form data
@@ -508,30 +508,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(formData)
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error de conexión con el servidor');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Clear form and close popup
-                infoForm.reset();
-                popupOverlay.style.display = 'none';
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error de conexión con el servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Clear form and close popup
+                    infoForm.reset();
+                    popupOverlay.style.display = 'none';
 
-                // Show response message using toast
-                showToast(data.message, data.success ? 'success' : 'error');
-            })
-            .catch(error => {
-                showToast(error.message || 'Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.', 'error');
-            });
+                    // Show response message using toast
+                    showToast(data.message, data.success ? 'success' : 'error');
+                })
+                .catch(error => {
+                    showToast(error.message || 'Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.', 'error');
+                });
         });
     }
 
     // Handle newsletter form submissions
     if (newsletterForms) {
         newsletterForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const email = this.querySelector('input[type="email"]').value;
 
@@ -543,26 +543,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: JSON.stringify({ email: email })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        this.reset();
-                    }
-                    showToast(data.message, data.success ? 'success' : 'error');
-                })
-                .catch(error => {
-                    showToast('Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.', 'error');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.reset();
+                        }
+                        showToast(data.message, data.success ? 'success' : 'error');
+                    })
+                    .catch(error => {
+                        showToast('Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.', 'error');
+                    });
             });
         });
     }
 
     // Función para agregar al carrito desde el modal
-    window.addToCartFromModal = function() {
+    window.addToCartFromModal = function () {
         console.log('🛒 Función addToCartFromModal ejecutada');
-        
+
         const productId = '1';
-        const productName = 'Programa de "Alineación Financiera I"';
+        const productName = 'Los 6 pasos para tu Independencia Financiera';
         const productPrice = 4650;
 
         console.log('📦 Producto a agregar:', { productId, productName, productPrice });
@@ -584,17 +584,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         console.log('🛒 Carrito después de agregar:', cart);
-        
+
         updateCart();
-        
+
         // Mostrar notificación
         showToast('Producto agregado al carrito', 'success');
-        
+
         console.log('✅ Producto agregado exitosamente, carrito no se abre automáticamente');
     };
 
     // Función para mostrar el temario
-    window.verTemario = function() {
+    window.verTemario = function () {
         // Crear un modal más atractivo para mostrar el temario
         const modal = document.createElement('div');
         modal.style.cssText = `
@@ -627,7 +627,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modalContent.innerHTML = `
             <div style="text-align: center; margin-bottom: 1.5rem;">
                 <h2 style="color: #222F58; margin: 0 0 0.5rem 0; font-size: 1.8rem;">Temario del Programa</h2>
-                <h3 style="color: #666; margin: 0; font-size: 1.2rem; font-weight: normal;">"Alineación Financiera I"</h3>
+                <h3 style="color: #666; margin: 0; font-size: 1.2rem; font-weight: normal;">"Los 6 pasos para tu Independencia Financiera"</h3>
             </div>
             
             <div style="margin-bottom: 2rem;">
@@ -639,32 +639,32 @@ document.addEventListener('DOMContentLoaded', function() {
             <div style="margin-bottom: 2rem;">
                 <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
                     <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">1</span>
-                    <span style="color: #333; font-weight: 500;">Mitos de la inversión</span>
+                    <span style="color: #333; font-weight: 500;">Lo que nadie te dijo de invertir</span>
                 </div>
                 
                 <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
                     <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">2</span>
-                    <span style="color: #333; font-weight: 500;">¿Cómo salir de deudas?</span>
+                    <span style="color: #333; font-weight: 500;">El precio del éxito</span>
                 </div>
                 
                 <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
                     <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">3</span>
-                    <span style="color: #333; font-weight: 500;">Abundancia y pensamiento holístico </span>
+                    <span style="color: #333; font-weight: 500;">El método para eliminar tus deudas</span>
                 </div>
                 
                 <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
                     <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">4</span>
-                    <span style="color: #333; font-weight: 500;">¿Por qué administrarme?</span>
+                    <span style="color: #333; font-weight: 500;">La ley de atracción del dinero</span>
                 </div>
                 
                 <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
                     <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">5</span>
-                    <span style="color: #333; font-weight: 500;">¿Cómo me preparo para invertir?</span>
+                    <span style="color: #333; font-weight: 500;">Dirige tu dinero como un capitán</span>
                 </div>
                 
                 <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
                     <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">6</span>
-                    <span style="color: #333; font-weight: 500;">Bienes Raíces</span>
+                    <span style="color: #333; font-weight: 500;">Mi debut como inversionista</span>
                 </div>
             </div>
 
@@ -700,12 +700,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Agregar el contenido al modal
         modal.appendChild(modalContent);
-        
+
         // Agregar clase para identificar el modal
         modal.className = 'modal-overlay';
-        
+
         // Cerrar modal al hacer clic fuera de él
-        modal.addEventListener('click', function(e) {
+        modal.addEventListener('click', function (e) {
             if (e.target === modal) {
                 modal.remove();
             }

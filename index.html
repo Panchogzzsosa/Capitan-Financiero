@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +11,65 @@
     <link rel="stylesheet" href="hero_fix.css">
     <link rel="stylesheet" href="scroll-animations.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --banner-h: 40px;
+            --header-h: 80px;
+        }
+        .promo-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--banner-h);
+            background: linear-gradient(135deg, #222F58 0%, #1a233e 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            z-index: 9999;
+        }
+        .promo-track {
+            display: inline-block;
+            white-space: nowrap;
+            will-change: transform;
+            animation: promoScroll 20s linear infinite;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-size: 14px;
+        }
+        .promo-track span {
+            margin: 0 24px;
+        }
+        @keyframes promoScroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+        .promo-banner { transition: transform .25s ease, opacity .25s ease; }
+        body.banner-hidden .promo-banner { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        .main-header { top: var(--banner-h); z-index: 1000; }
+        body { padding-top: calc(var(--banner-h) + var(--header-h)); }
+        body.banner-hidden .main-header { top: 0; }
+        body.banner-hidden { padding-top: var(--header-h); }
+        @media (max-width: 768px) {
+            :root { --header-h: 64px; }
+        }
+    </style>
 </head>
+
 <body>
+    <div class="promo-banner">
+        <div class="promo-track">
+            <span>CODIGO DE DESCUENTO : CAPITAN26</span>
+            <span>CODIGO DE DESCUENTO : CAPITAN26</span>
+            <span>CODIGO DE DESCUENTO : CAPITAN26</span>
+            <span>CODIGO DE DESCUENTO : CAPITAN26</span>
+            <span>CODIGO DE DESCUENTO : CAPITAN26</span>
+            <span>CODIGO DE DESCUENTO : CAPITAN26</span>
+            <span>CODIGO DE DESCUENTO : CAPITAN26</span>
+            <span>CODIGO DE DESCUENTO : CAPITAN26</span>
+        </div>
+    </div>
     <!-- Header con navegación -->
     <header class="main-header">
         <nav class="nav-container">
@@ -52,34 +110,36 @@
                 <img src="Img/Group 74.png" alt="Capitán Financiero" class="fallback-image">
                 <img src="Img/oswaldo.png" alt="Oswaldo" class="oswaldo-img desktop-only">
                 <h1 class="titulo scroll-animate fade-in-up">
-                    <span class="desktop-text">Domina tus finanzas, 
+                    <span class="desktop-text">Domina tus finanzas,
                         <br>
                         gana en la vida
                     </span>
                     <span class="mobile-text">Domina tus finanzas,<br>gana en la vida</span>
                 </h1>
                 <p class="titulo-descripcion scroll-animate fade-in-up delay-1">
-                    <span class="desktop-text">En el partido de la vida, las finanzas son 
+                    <span class="desktop-text">En el partido de la vida, las finanzas son
                         <br>
-                        clave para ganar. Entrenemos tu 
+                        clave para ganar. Entrenemos tu
                         <br>
-                        mentalidad financiera para que tomes 
+                        mentalidad financiera para que tomes
                         <br>
                         decisiones con estrategia y logres la
-                        <br> 
+                        <br>
                         victoria
                     </span>
-                    <span class="mobile-text">En el partido de la vida, las finanzas son clave para ganar.<br><br>Entrenemos tu mentalidad financiera para que tomes decisiones con estrategia y logres la victoria</span>
+                    <span class="mobile-text">En el partido de la vida, las finanzas son clave para
+                        ganar.<br><br>Entrenemos tu mentalidad financiera para que tomes decisiones con estrategia y
+                        logres la victoria</span>
                 </p>
             </picture>
             <div class="floating-circle"></div>
         </div>
     </div>
- 
+
     <!-- Nosotros Section -->
     <div class="nosotros-section" id="nosotros">
 
-        
+
         <div class="mvv-container">
             <div class="mvv-panel scroll-animate fade-in-up delay-1">
                 <div class="mvv-icon">
@@ -87,9 +147,10 @@
                     <img src="Img/misio_hover.png" alt="Misión" class="mvv-icon-img-hover">
                 </div>
                 <h3>MISIÓN</h3>
-                <p>Transformar la manera en que las personas toman decisiones sobre su dinero. Nuestro enfoque práctico, cercano y motivador ayuda a las personas a alcanzar estabilidad, claridad y libertad financiera.</p>
+                <p>Transformar la manera en que las personas toman decisiones sobre su dinero. Nuestro enfoque práctico,
+                    cercano y motivador ayuda a las personas a alcanzar estabilidad, claridad y libertad financiera.</p>
             </div>
-            
+
             <div class="mvv-panel scroll-animate fade-in-up delay-2">
                 <div class="mvv-icon">
                     <img src="Img/vision.png" alt="Visión" class="mvv-icon-img">
@@ -98,7 +159,7 @@
                 <h3>VISIÓN</h3>
                 <p>Nuestra visión es convertirnos en la referencia en el mundo como Capitanes Financieros.</p>
             </div>
-            
+
             <div class="mvv-panel scroll-animate fade-in-up delay-3">
                 <div class="mvv-icon">
                     <img src="Img/valores.png" alt="Valores" class="mvv-icon-img">
@@ -113,7 +174,8 @@
                     <br>
                     Búsqueda continua de la Excelencia
                     <br>
-                    Trabajo en equipo</p>
+                    Trabajo en equipo
+                </p>
             </div>
         </div>
     </div>
@@ -130,14 +192,15 @@
         <div class="products-container-minimal">
             <div class="product-card-minimal scroll-animate fade-in-up delay-1">
                 <div class="product-header-minimal">
-                    <h3>Programa de "Alineación Financiera I"</h3>
-                    <p class="product-description">Conviértete en el Capitán de tus finanzas: transforma tu relación con el dinero y finaliza con una inversión sólida guiada por expertos.</p>
+                    <h3>Los 6 pasos para tu Independencia Financiera</h3>
+                    <p class="product-description">Conviértete en el Capitán de tus finanzas: transforma tu relación con
+                        el dinero y finaliza con una inversión sólida guiada por expertos.</p>
                 </div>
                 <div class="product-features-minimal">
                     <span><i class="fas fa-check"></i> 6 cursos impartidos por expertos</span>
                     <span><i class="fas fa-check"></i> Diploma incluido</span>
                     <span><i class="fas fa-check"></i> Material por cada curso</span>
-                    <span><i class="fas fa-check"></i> Acceso a la comunidad  de Capitán Financiero</span>
+                    <span><i class="fas fa-check"></i> Acceso a la comunidad de Capitán Financiero</span>
                 </div>
                 <div class="product-price-minimal">
                     <span class="price-minimal">$4,650 MXN</span>
@@ -145,7 +208,8 @@
                 <button class="view-syllabus-btn" onclick="verTemario()">
                     Ver temario
                 </button>
-                <button class="add-to-cart-minimal" data-product-id="1" data-product-name="Programa de 'Alineación Financiera I'" data-product-price="4650">
+                <button class="add-to-cart-minimal" data-product-id="1"
+                    data-product-name="Los 6 pasos para tu Independencia Financiera" data-product-price="4650">
                     Agregar al carrito
                 </button>
             </div>
@@ -154,7 +218,8 @@
                 <div class="blurred-content">
                     <div class="product-header-minimal">
                         <h3>Guía de Inversión</h3>
-                        <p class="product-description">Descubre cómo invertir tu dinero de manera inteligente y segura con nuestra guía completa.</p>
+                        <p class="product-description">Descubre cómo invertir tu dinero de manera inteligente y segura
+                            con nuestra guía completa.</p>
                     </div>
                     <div class="product-features-minimal">
                         <span><i class="fas fa-check"></i> 200+ páginas</span>
@@ -179,7 +244,8 @@
                 <div class="blurred-content">
                     <div class="product-header-minimal">
                         <h3>Kit Financiero Premium</h3>
-                        <p class="product-description">Todo lo que necesitas para transformar tu vida financiera en un solo paquete completo.</p>
+                        <p class="product-description">Todo lo que necesitas para transformar tu vida financiera en un
+                            solo paquete completo.</p>
                     </div>
                     <div class="product-features-minimal">
                         <span><i class="fas fa-check"></i> Curso completo</span>
@@ -213,7 +279,11 @@
             <div class="podcast-info">
                 <h2>Escucha nuestro Podcast</h2>
                 <p>Nuevo episodio cada jueves</p>
-                <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/show/5e7tD1geV56yzCcI8VatWw?utm_source=generator&theme=0" width="70%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <iframe data-testid="embed-iframe" style="border-radius:12px"
+                    src="https://open.spotify.com/embed/show/5e7tD1geV56yzCcI8VatWw?utm_source=generator&theme=0"
+                    width="70%" height="152" frameBorder="0" allowfullscreen=""
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"></iframe>
             </div>
         </div>
     </div>
@@ -224,15 +294,20 @@
             <div class="footer-section">
                 <h4>Síguenos</h4>
                 <div class="social-links">
-                    <a href="https://www.instagram.com/capitanfinanciero/" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.facebook.com/p/Capit%C3%A1n-Financiero-61556137297880/" target="_blank"><i class="fab fa-facebook"></i></a>
-                    <a href="https://www.linkedin.com/company/capitanfinanciero/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://www.tiktok.com/@capitanfinanciero" target="_blank"><i class="fab fa-tiktok"></i></a>
-                    <a href="https://www.youtube.com/@CAPITANFINANCIERO" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/capitanfinanciero/" target="_blank"><i
+                            class="fab fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/p/Capit%C3%A1n-Financiero-61556137297880/" target="_blank"><i
+                            class="fab fa-facebook"></i></a>
+                    <a href="https://www.linkedin.com/company/capitanfinanciero/" target="_blank"><i
+                            class="fab fa-linkedin"></i></a>
+                    <a href="https://www.tiktok.com/@capitanfinanciero" target="_blank"><i
+                            class="fab fa-tiktok"></i></a>
+                    <a href="https://www.youtube.com/@CAPITANFINANCIERO" target="_blank"><i
+                            class="fab fa-youtube"></i></a>
 
                 </div>
             </div>
-            
+
             <div class="footer-section">
                 <div class="newsletter-container">
                     <h4>Newsletter</h4>
@@ -247,7 +322,7 @@
                     </form>
                 </div>
             </div>
-            
+
             <div class="footer-section">
                 <h4>Contacto</h4>
                 <p>contacto@capitanfinanciero.com</p>
@@ -257,7 +332,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="footer-bottom">
             <p>Capitán Financiero | © 2025 Todos los derechos reservados.</p>
         </div>
@@ -367,18 +442,59 @@
 
     <!-- Cookie Banner -->
     <div class="cookie-banner">
-        <p>Utilizamos cookies para mejorar tu experiencia en nuestro sitio web. Al continuar navegando, aceptas el uso de cookies.</p>
+        <p>Utilizamos cookies para mejorar tu experiencia en nuestro sitio web. Al continuar navegando, aceptas el uso
+            de cookies.</p>
         <button id="accept-cookies">Aceptar</button>
     </div>
 
     <script src="script.js"></script>
     <script src="scroll-animations.js"></script>
-    
+    <script>
+        // Configuración dinámica del banner desde la base de datos
+        (function configureBanner() {
+            const bannerEl = document.querySelector('.promo-banner');
+            const trackEl = document.querySelector('.promo-track');
+            fetch('get_banner_settings.php')
+                .then(r => r.json())
+                .then(data => {
+                    const enabled = !!data.enabled;
+                    const text = (data.text || 'CODIGO DE DESCUENTO : CAPITAN26').toUpperCase();
+                    if (!enabled) {
+                        document.documentElement.style.setProperty('--banner-h', '0px');
+                        if (bannerEl) bannerEl.style.display = 'none';
+                        document.body.classList.add('banner-hidden');
+                    } else {
+                        document.documentElement.style.setProperty('--banner-h', '40px');
+                        if (bannerEl) bannerEl.style.display = 'flex';
+                        if (trackEl) {
+                            const spans = new Array(8).fill(0).map(() => `<span>${text}</span>`).join('');
+                            trackEl.innerHTML = spans;
+                        }
+                        document.body.classList.remove('banner-hidden');
+                    }
+                })
+                .catch(() => {
+                    // Si falla, dejar valores por defecto
+                });
+        })();
+        (function() {
+            function update() {
+                if (window.scrollY > 80) {
+                    document.body.classList.add('banner-hidden');
+                } else {
+                    document.body.classList.remove('banner-hidden');
+                }
+            }
+            window.addEventListener('scroll', update, { passive: true });
+            update();
+        })();
+    </script>
+
     <!-- Script para capturar parámetros UTM -->
     <script>
         // Variable para controlar si ya se registró la visita
         let utmVisitRegistered = false;
-        
+
         // Función para capturar y guardar parámetros UTM
         function captureAndStoreUTM() {
             // Evitar ejecución múltiple
@@ -386,27 +502,27 @@
                 console.log('🔄 UTM ya procesado anteriormente, saltando...');
                 return;
             }
-            
+
             const urlParams = new URLSearchParams(window.location.search);
-            
+
             // Capturar parámetros UTM de la URL
             const utm_source = urlParams.get('utm_source') || '';
             const utm_medium = urlParams.get('utm_medium') || '';
             const utm_campaign = urlParams.get('utm_campaign') || '';
             const utm_content = urlParams.get('utm_content') || '';
             const utm_term = urlParams.get('utm_term') || '';
-            
+
             // Solo procesar si hay parámetros UTM
             if (utm_source || utm_medium || utm_campaign) {
                 // Crear una clave única para esta visita UTM
                 const visitKey = `utm_visit_${utm_source}_${utm_medium}_${utm_campaign}_${Date.now()}`;
-                
+
                 // Verificar si ya se registró esta visita específica
                 if (localStorage.getItem(visitKey)) {
                     console.log('🔄 Esta visita UTM ya fue registrada');
                     return;
                 }
-                
+
                 const utmData = {
                     utm_source,
                     utm_medium,
@@ -417,12 +533,12 @@
                     landing_page: window.location.href,
                     timestamp: new Date().toISOString()
                 };
-                
+
                 // Guardar en localStorage
                 localStorage.setItem('capitanFinancieroUTM', JSON.stringify(utmData));
-                
+
                 console.log('📱 UTM parameters capturados y guardados en index.html:', utmData);
-                
+
                 // También registrar en la consola para debugging
                 console.log('🔍 Parámetros UTM encontrados en la URL:', {
                     utm_source,
@@ -431,15 +547,15 @@
                     utm_content,
                     utm_term
                 });
-                
+
                 // Registrar la visita inmediatamente en la base de datos
                 registerUTMVisit(utmData, visitKey);
-                
+
                 // Marcar como registrada para evitar duplicados
                 utmVisitRegistered = true;
             }
         }
-        
+
         // Función para registrar la visita UTM en la base de datos
         function registerUTMVisit(utmData, visitKey) {
             const params = new URLSearchParams({
@@ -450,7 +566,7 @@
                 utm_term: utmData.utm_term,
                 landing_page: utmData.landing_page
             });
-            
+
             // Hacer petición al servidor para registrar la visita
             fetch('track_visit.php?' + params.toString(), {
                 method: 'GET',
@@ -458,30 +574,31 @@
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('✅ Visita UTM registrada exitosamente:', data);
-                    // Marcar como registrada en localStorage
-                    localStorage.setItem(visitKey, 'true');
-                } else {
-                    console.warn('⚠️ Error al registrar visita UTM:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('❌ Error al registrar visita UTM:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('✅ Visita UTM registrada exitosamente:', data);
+                        // Marcar como registrada en localStorage
+                        localStorage.setItem(visitKey, 'true');
+                    } else {
+                        console.warn('⚠️ Error al registrar visita UTM:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Error al registrar visita UTM:', error);
+                });
         }
-        
+
         // Solo ejecutar UNA VEZ cuando se carga la página
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             captureAndStoreUTM();
         });
     </script>
-    
+
     <!-- Botón de WhatsApp Minimalista -->
     <a href="https://wa.me/+5218112400075" target="_blank" class="whatsapp-float" aria-label="Contactar por WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
 </body>
+
 </html>

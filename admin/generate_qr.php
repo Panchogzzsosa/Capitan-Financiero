@@ -12,14 +12,17 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit;
 }
 
-// URL base de tu sitio - puedes cambiar esto según tu configuración
-//$baseUrl = 'https://prueba.capitanfinanciero.com'; // Cambia por tu dominio real
+// URL base de tu sitio (producción)
+//$baseUrl = 'https://prueba.capitanfinanciero.com'; // Sandbox (comentado)
+$baseUrl = 'https://capitanfinanciero.com';
 
-// Si estás probando localmente, usa esta línea en su lugar:
-$baseUrl = 'https://capitanfinanciero.com/';
-
-// Crear URL para el carrito con parámetros UTM para rastreo
-$cartUrl = $baseUrl . '/checkout.html?utm_source=qr_code&utm_medium=qr_code&utm_campaign=Alineación_Financiera_I&utm_content=programa_basico&utm_term=finanzas_personales';
+// Crear URL para el carrito con parámetros UTM para rastreo del nuevo producto
+$cartUrl = rtrim($baseUrl, '/') . '/checkout.html'
+    . '?utm_source=qr_code'
+    . '&utm_medium=offline'
+    . '&utm_campaign=Los_6_pasos_Independencia_Financiera'
+    . '&utm_content=curso_principal'
+    . '&utm_term=independencia_financiera';
 
 // Crear el código QR
 $qrCode = new QrCode($cartUrl);
@@ -34,7 +37,7 @@ $result = $writer->write($qrCode);
 $qrDataUri = 'data:image/png;base64,' . base64_encode($result->getString());
 
 // También guardar el QR como archivo
-$qrPath = __DIR__ . '/../Img/qr_cart_alineacion_financiera.png';
+$qrPath = __DIR__ . '/../Img/qr_cart_los_6_pasos.png';
 $result->saveToFile($qrPath);
 ?>
 
@@ -131,7 +134,7 @@ $result->saveToFile($qrPath);
     <div class="container">
         <div class="qr-container">
             <h2><i class="fas fa-qrcode"></i> Código QR con UTM</h2>
-            <p class="text-muted">Escanea este código QR para ir a la página principal con parámetros UTM para rastrear el tráfico offline</p>
+            <p class="text-muted">Escanea este código QR para ir al checkout del producto "Los 6 pasos para tu Independencia Financiera" con parámetros UTM</p>
             
             <div class="qr-code">
                 <img src="<?php echo $qrDataUri; ?>" alt="QR Code con UTM" />
@@ -143,7 +146,7 @@ $result->saveToFile($qrPath);
             </div>
             
             <div class="mt-4">
-                <a href="../Img/qr_cart_alineacion_financiera.png" download="qr_utm_alineacion_financiera.png" class="download-btn">
+                <a href="../Img/qr_cart_los_6_pasos.png" download="qr_los_6_pasos.png" class="download-btn">
                     <i class="fas fa-download"></i> Descargar QR
                 </a>
                 
@@ -156,9 +159,9 @@ $result->saveToFile($qrPath);
                 <ul class="text-start">
                     <li><strong>utm_source:</strong> qr_code (identifica que viene de un código QR)</li>
                     <li><strong>utm_medium:</strong> offline (indica que es tráfico offline)</li>
-                    <li><strong>utm_campaign:</strong> alineacion_financiera (nombre de la campaña)</li>
-                    <li><strong>utm_content:</strong> programa_basico (contenido específico)</li>
-                    <li><strong>utm_term:</strong> finanzas_personales (palabras clave)</li>
+                    <li><strong>utm_campaign:</strong> Los_6_pasos_Independencia_Financiera (campaña del nuevo producto)</li>
+                    <li><strong>utm_content:</strong> curso_principal (contenido específico)</li>
+                    <li><strong>utm_term:</strong> independencia_financiera (palabras clave)</li>
                 </ul>
                 
                 <h5 class="mt-3">Instrucciones:</h5>

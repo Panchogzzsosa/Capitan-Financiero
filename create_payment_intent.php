@@ -35,6 +35,13 @@ try {
         'automatic_payment_methods' => [
             'enabled' => true,
         ],
+        'payment_method_options' => [
+            'card' => [
+                'installments' => [
+                    'enabled' => true
+                ]
+            ]
+        ],
         'metadata' => [
             'order_id' => uniqid('CF_'),
             'customer_email' => $input['email'] ?? '',

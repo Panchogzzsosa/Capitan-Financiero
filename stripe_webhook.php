@@ -9,7 +9,8 @@ require_once 'vendor/autoload.php';
 // Obtener el payload del webhook
 $payload = @file_get_contents('php://input');
 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
-$endpoint_secret = 'whsec_sdTeePFAyrsisvfzjZxYUGgx85yu1Hnt';
+//$endpoint_secret = 'whsec_sdTeePFAyrsisvfzjZxYUGgx85yu1Hnt';
+$endpoint_secret = getenv('STRIPE_WEBHOOK_SECRET') ?: null;
 
 try {
     // Verificar la firma del webhook
@@ -72,29 +73,49 @@ function handleCheckoutSessionCompleted($session) {
         $pdo->beginTransaction();
         
         try {
-            // Insertar o actualizar cliente
-            $stmt = $pdo->prepare("
-                INSERT INTO customers (name, email, phone, address) 
-                VALUES (:name, :email, :phone, :address)
-                ON DUPLICATE KEY UPDATE 
-                    name = VALUES(name),
-                    phone = VALUES(phone),
-                    address = VALUES(address),
-                    updated_at = CURRENT_TIMESTAMP
-            ");
-            
-            $stmt->execute([
-                ':name' => $customer_name,
-                ':email' => $customer_email,
-                ':phone' => $customer_phone,
-                ':address' => $customer_address ? json_encode($customer_address) : null
-            ]);
-            
-            // Obtener ID del cliente
-            $stmt = $pdo->prepare("SELECT id FROM customers WHERE email = :email");
-            $stmt->execute([':email' => $customer_email]);
+            // Normalizar datos
+            $normalizedEmail = $customer_email ? strtolower(trim($customer_email)) : null;
+            $normalizedName = $customer_name ? trim($customer_name) : null;
+            $normalizedPhone = $customer_phone ? trim($customer_phone) : null;
+            $normalizedAddress = $customer_address ? json_encode($customer_address) : null;
+
+            // Cliente existente por email
+            $stmt = $pdo->prepare("SELECT id, name FROM customers WHERE email = :email ORDER BY id DESC LIMIT 1");
+            $stmt->execute([':email' => $normalizedEmail]);
             $customer = $stmt->fetch();
-            $customer_id = $customer['id'];
+            if ($customer) {
+                $customer_id = $customer['id'];
+                $stmtUpdate = $pdo->prepare("
+                    UPDATE customers
+                    SET phone = COALESCE(:phone, phone),
+                        address = COALESCE(:address, address),
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = :id
+                ");
+                $stmtUpdate->execute([
+                    ':phone' => $normalizedPhone,
+                    ':address' => $normalizedAddress,
+                    ':id' => $customer_id
+                ]);
+            } else {
+                $stmtInsert = $pdo->prepare("
+                    INSERT INTO customers (name, email, phone, address)
+                    VALUES (:name, :email, :phone, :address)
+                ");
+                $stmtInsert->execute([
+                    ':name' => $normalizedName,
+                    ':email' => $normalizedEmail,
+                    ':phone' => $normalizedPhone,
+                    ':address' => $normalizedAddress
+                ]);
+                $customer_id = $pdo->lastInsertId();
+            }
+            
+            if (!$customer_id) {
+                throw new Exception('Webhook: No se pudo obtener el ID del cliente');
+            }
+            
+            error_log("Webhook: cliente {$normalizedEmail} asociado a ID {$customer_id}");
             
             // Crear orden
             $stmt = $pdo->prepare("
@@ -208,7 +229,7 @@ function handleCheckoutSessionCompleted($session) {
                 error_log("Error en automatización WhatsApp (webhook): " . $e->getMessage());
             }
             
-            // 📧 Envío automático de correo de confirmación
+            // 📧 Envío automático de correo de confirmación (con idempotencia)
             try {
                 require_once 'brevo_config.php';
                 $mailer = new BrevoMailer();
@@ -227,7 +248,21 @@ function handleCheckoutSessionCompleted($session) {
                     'order_id' => $order_id
                 ];
                 
-                $emailSent = $mailer->sendPurchaseConfirmation($customerData, $orderData);
+                // Evitar duplicados: verificar si ya se envió correo de confirmación para esta orden
+                $stmt = $pdo->prepare("
+                    SELECT id FROM email_logs 
+                    WHERE order_id = :order_id AND email_type = 'purchase_confirmation' AND status = 'sent' 
+                    LIMIT 1
+                ");
+                $stmt->execute([':order_id' => $order_id]);
+                $alreadySent = (bool)$stmt->fetch();
+                
+                $emailSent = false;
+                if (!$alreadySent) {
+                    $emailSent = $mailer->sendPurchaseConfirmation($customerData, $orderData);
+                } else {
+                    error_log("ℹ️ Webhook: correo de confirmación ya registrado para la orden {$order_id}, se evita duplicado");
+                }
                 
                 if ($emailSent) {
                     // Registrar el envío del correo

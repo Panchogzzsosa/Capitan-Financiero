@@ -258,16 +258,30 @@
                 }
                 
                 // Preparar datos de la orden
-                // Calcular total desde el carrito si está disponible
+                // Calcular total usando valores guardados durante el checkout (si existen)
                 let totalCents = 465000;
+                let discountCode = null;
+                let discountCents = null;
                 try {
-                    const cartJson = localStorage.getItem('capitanFinancieroCart');
-                    if (cartJson) {
-                        const cartItems = JSON.parse(cartJson);
-                        const total = cartItems.reduce((sum, it) => sum + (parseInt(it.price, 10) || 0) * (parseInt(it.quantity, 10) || 1), 0);
-                        if (total > 0) {
-                            totalCents = total * 100;
+                    const storedFinal = localStorage.getItem('cf_final_total_cents');
+                    const storedDiscountCode = localStorage.getItem('cf_discount_code');
+                    const storedDiscountCents = localStorage.getItem('cf_discount_cents');
+                    if (storedFinal && !isNaN(parseInt(storedFinal, 10))) {
+                        totalCents = parseInt(storedFinal, 10);
+                    } else {
+                        // Fallback: calcular total desde el carrito si está disponible
+                        const cartJson = localStorage.getItem('capitanFinancieroCart');
+                        if (cartJson) {
+                            const cartItems = JSON.parse(cartJson);
+                            const total = cartItems.reduce((sum, it) => sum + (parseInt(it.price, 10) || 0) * (parseInt(it.quantity, 10) || 1), 0);
+                            if (total > 0) {
+                                totalCents = total * 100;
+                            }
                         }
+                    }
+                    discountCode = storedDiscountCode || null;
+                    if (storedDiscountCents && !isNaN(parseInt(storedDiscountCents, 10))) {
+                        discountCents = parseInt(storedDiscountCents, 10);
                     }
                 } catch (e) {
                     console.warn('No se pudo leer el carrito, usando total por defecto');
@@ -281,7 +295,10 @@
                     stripe_payment_intent_id: paymentIntentId,
                     total_amount: (totalCents / 100).toFixed(2),
                     total_amount_cents: totalCents,
-                    payment_method: 'card'
+                    payment_method: 'card',
+                    discount_code: discountCode,
+                    discount_amount: discountCents ? (discountCents / 100).toFixed(2) : null,
+                    discount_amount_cents: discountCents || null
                 };
                 
                 // Agregar UTM parameters si están disponibles
@@ -319,6 +336,10 @@
                 localStorage.removeItem('customer_email');
                 localStorage.removeItem('customer_phone');
                 localStorage.removeItem('customer_address');
+                localStorage.removeItem('cf_subtotal_cents');
+                localStorage.removeItem('cf_discount_cents');
+                localStorage.removeItem('cf_discount_code');
+                localStorage.removeItem('cf_final_total_cents');
                 console.log('🧹 localStorage limpiado');
                 
             } catch (error) {
