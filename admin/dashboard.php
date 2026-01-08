@@ -898,7 +898,7 @@ try {
                     <i class="fas fa-qrcode"></i> Generar QR
                 </button>
             </li>
-            <li class="nav-item, role="presentation">
+            <li class="nav-item" role="presentation">
                 <button class="nav-link" id="webinar-tab" data-bs-toggle="tab" data-bs-target="#webinar" type="button">
                     <i class="fas fa-video"></i> Webinar
                 </button>
@@ -906,6 +906,11 @@ try {
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button">
                     <i class="fas fa-bullhorn"></i> Banner
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="manual-email-tab" data-bs-toggle="tab" data-bs-target="#manual-email" type="button">
+                    <i class="fas fa-paper-plane"></i> Envíos Manuales
                 </button>
             </li>
         </ul>
@@ -936,6 +941,87 @@ try {
                     </div>
                 </div>
             </div>
+            <!-- Manual Email Tab -->
+            <div class="tab-pane fade" id="manual-email">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0"><i class="fas fa-paper-plane"></i> Enviar Correo Manualmente</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="manualEmailForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="customer_name" class="form-label">Nombre del Cliente</label>
+                                    <input type="text" class="form-control" id="customer_name" name="customer_name" required placeholder="Ej. Juan Pérez">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="customer_email" class="form-label">Email del Cliente</label>
+                                    <input type="email" class="form-control" id="customer_email" name="customer_email" required placeholder="Ej. juan@email.com">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="product_name" class="form-label">Producto Comprado</label>
+                                    <input type="text" class="form-control" id="product_name" name="product_name" value="Los 6 Pasos para tu Independencia Financiera" placeholder="Ej. Curso Avanzado">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="price" class="form-label">Precio ($)</label>
+                                    <input type="number" step="0.01" class="form-control" id="price" name="price" value="997.00">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="order_id" class="form-label">Número de Orden</label>
+                                    <input type="text" class="form-control" id="order_id" name="order_id" required placeholder="Ej. ORD-12345">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Enviar Correo
+                            </button>
+                        </form>
+                        <div id="emailResult" class="mt-3" style="display:none;"></div>
+                    </div>
+                </div>
+                
+                <script>
+                document.getElementById('manualEmailForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var formData = new FormData(this);
+                    var resultDiv = document.getElementById('emailResult');
+                    var submitBtn = this.querySelector('button[type="submit"]');
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+                    resultDiv.style.display = 'none';
+                    resultDiv.className = 'mt-3 alert';
+                    
+                    fetch('manual_email_send.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        resultDiv.style.display = 'block';
+                        if (data.success) {
+                            resultDiv.className = 'mt-3 alert alert-success';
+                            resultDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
+                            this.reset();
+                        } else {
+                            resultDiv.className = 'mt-3 alert alert-danger';
+                            resultDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + data.message;
+                        }
+                    })
+                    .catch(error => {
+                        resultDiv.style.display = 'block';
+                        resultDiv.className = 'mt-3 alert alert-danger';
+                        resultDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error de conexión: ' + error;
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Correo';
+                    });
+                });
+                </script>
+            </div>
+
             <!-- Orders Tab -->
             <div class="tab-pane fade show active" id="orders">
                 <table id="ordersTable" class="table table-sm">

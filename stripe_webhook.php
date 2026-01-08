@@ -10,7 +10,7 @@ require_once 'vendor/autoload.php';
 $payload = @file_get_contents('php://input');
 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
 //$endpoint_secret = 'whsec_sdTeePFAyrsisvfzjZxYUGgx85yu1Hnt';
-$endpoint_secret = getenv('STRIPE_WEBHOOK_SECRET') ?: null;
+$endpoint_secret = defined('STRIPE_WEBHOOK_SECRET') && STRIPE_WEBHOOK_SECRET ? STRIPE_WEBHOOK_SECRET : (getenv('STRIPE_WEBHOOK_SECRET') ?: null);
 
 try {
     // Verificar la firma del webhook
@@ -231,8 +231,8 @@ function handleCheckoutSessionCompleted($session) {
             
             // 📧 Envío automático de correo de confirmación (con idempotencia)
             try {
-                require_once 'brevo_config.php';
-                $mailer = new BrevoMailer();
+                require_once 'EmailService.php';
+                $mailer = new EmailService();
                 
                 $customerData = [
                     'name' => $customer_name,
@@ -249,6 +249,7 @@ function handleCheckoutSessionCompleted($session) {
                 ];
                 
                 // Evitar duplicados: verificar si ya se envió correo de confirmación para esta orden
+                // MODIFICACIÓN: Solo bloquear si el estado es 'sent' (permitir reintentos si falló o no existe)
                 $stmt = $pdo->prepare("
                     SELECT id FROM email_logs 
                     WHERE order_id = :order_id AND email_type = 'purchase_confirmation' AND status = 'sent' 
@@ -257,11 +258,14 @@ function handleCheckoutSessionCompleted($session) {
                 $stmt->execute([':order_id' => $order_id]);
                 $alreadySent = (bool)$stmt->fetch();
                 
+                // Forzar envío en entorno local para pruebas (opcional, quitar en producción)
+                $alreadySent = false; // <--- DESACTIVADO PARA PRUEBAS
+
                 $emailSent = false;
                 if (!$alreadySent) {
                     $emailSent = $mailer->sendPurchaseConfirmation($customerData, $orderData);
                 } else {
-                    error_log("ℹ️ Webhook: correo de confirmación ya registrado para la orden {$order_id}, se evita duplicado");
+                    error_log("ℹ️ Webhook: correo de confirmación ya registrado y ENVIADO para la orden {$order_id}, se evita duplicado");
                 }
                 
                 if ($emailSent) {

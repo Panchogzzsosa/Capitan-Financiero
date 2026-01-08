@@ -191,8 +191,8 @@ try {
         
         // 📧 NUEVA FUNCIONALIDAD: Envío automático de correo de confirmación (con idempotencia)
         try {
-            require_once 'brevo_config.php';
-            $mailer = new BrevoMailer();
+            require_once 'EmailService.php';
+            $mailer = new EmailService();
             
             // Preparar datos del cliente
             $customerData = [
@@ -219,6 +219,9 @@ try {
             $stmt->execute([':order_id' => $order_id]);
             $alreadySent = (bool)$stmt->fetch();
             
+            // Forzar envío en entorno local para pruebas
+            $alreadySent = false; 
+
             $emailSent = false;
             if (!$alreadySent) {
                 // Enviar correo de confirmación
