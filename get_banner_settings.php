@@ -9,7 +9,7 @@ try {
         CREATE TABLE IF NOT EXISTS site_settings (
             id INT PRIMARY KEY AUTO_INCREMENT,
             banner_enabled TINYINT(1) NOT NULL DEFAULT 1,
-            banner_text VARCHAR(255) NOT NULL DEFAULT 'CODIGO DE DESCUENTO : CAPITAN26',
+            banner_text VARCHAR(255) NOT NULL DEFAULT 'CODIGO DE DESCUENTO : CAPITAN01',
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
     ");
@@ -17,7 +17,7 @@ try {
     if (!$settings) {
         echo json_encode([
             'enabled' => true,
-            'text' => 'CODIGO DE DESCUENTO : CAPITAN26'
+            'text' => 'CODIGO DE DESCUENTO : CAPITAN01'
         ]);
         exit;
     }
@@ -28,6 +28,6 @@ try {
 } catch (Exception $e) {
     echo json_encode([
         'enabled' => true,
-        'text' => 'CODIGO DE DESCUENTO : CAPITAN26'
+        'text' => 'CODIGO DE DESCUENTO : CAPITAN01'
     ]);
 }

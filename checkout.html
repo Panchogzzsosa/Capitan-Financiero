@@ -441,7 +441,7 @@
                 .then(r => r.json())
                 .then(data => {
                     const enabled = !!data.enabled;
-                    const text = (data.text || 'CODIGO DE DESCUENTO : CAPITAN26').toUpperCase();
+                    const text = (data.text || 'CODIGO DE DESCUENTO : CAPITAN01').toUpperCase();
                     if (!enabled) {
                         document.documentElement.style.setProperty('--banner-h', '0px');
                         if (bannerEl) bannerEl.style.display = 'none';
@@ -614,7 +614,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="checkout.js"></script>
+    <script src="checkout.js?v=20260108_1"></script>
 
     <script>
         // Variable global para el selector de teléfono

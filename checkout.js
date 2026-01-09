@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Códigos de descuento válidos (descuento en pesos)
     const validDiscountCodes = {
-        'CAPITAN26': 3151,
+        'CAPITAN01': 2751,
         'MONEI26': 3151
     };
 
@@ -293,7 +293,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             const requestData = {
-                amount: cartTotal, // Este es el precio final con promoción ($1,899.00)
+                amount: cartTotal, // Este valor será ignorado por el servidor en favor del cálculo seguro
+                discount_code: appliedDiscountCode, // Enviamos el código para validación en servidor
                 email: document.getElementById('email').value,
                 name: document.getElementById('name').value
             };

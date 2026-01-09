@@ -20,14 +20,14 @@ try {
         CREATE TABLE IF NOT EXISTS site_settings (
             id INT PRIMARY KEY AUTO_INCREMENT,
             banner_enabled TINYINT(1) NOT NULL DEFAULT 1,
-            banner_text VARCHAR(255) NOT NULL DEFAULT 'CODIGO DE DESCUENTO : CAPITAN26',
+            banner_text VARCHAR(255) NOT NULL DEFAULT 'CODIGO DE DESCUENTO : CAPITAN01',
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
     ");
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_banner'])) {
         $enabled = isset($_POST['banner_enabled']) ? 1 : 0;
         $text = trim((string)($_POST['banner_text'] ?? ''));
-        if ($text === '') { $text = 'CODIGO DE DESCUENTO : CAPITAN26'; }
+        if ($text === '') { $text = 'CODIGO DE DESCUENTO : CAPITAN01'; }
         $exists = $pdo->query("SELECT COUNT(*) AS c FROM site_settings")->fetch();
         if (($exists['c'] ?? 0) > 0) {
             $stmt = $pdo->prepare("UPDATE site_settings SET banner_enabled = ?, banner_text = ? WHERE id = 1");
@@ -40,10 +40,10 @@ try {
     }
     $settings = $pdo->query("SELECT * FROM site_settings WHERE id = 1")->fetch();
     $banner_enabled = $settings ? (int)$settings['banner_enabled'] === 1 : true;
-    $banner_text = $settings ? (string)$settings['banner_text'] : 'CODIGO DE DESCUENTO : CAPITAN26';
+    $banner_text = $settings ? (string)$settings['banner_text'] : 'CODIGO DE DESCUENTO : CAPITAN01';
 } catch (Exception $e) {
     $banner_enabled = true;
-    $banner_text = 'CODIGO DE DESCUENTO : CAPITAN26';
+    $banner_text = 'CODIGO DE DESCUENTO : CAPITAN01';
 }
 function stripeOrderIsInstallments($paymentIntentId) {
     static $cache = [];
