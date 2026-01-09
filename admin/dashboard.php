@@ -322,14 +322,47 @@ if (isset($_GET['export']) && $_GET['export'] === 'webinar') {
 try {
     $pdo = getDBConnection();
     
+    // Date Filter Logic
+    $filter_date = $_GET['filter_date'] ?? null;
+    $start_date = null;
+    $end_date = null;
+    $date_params = [];
+
+    if ($filter_date) {
+        // Extract dates using regex to be robust against separators and whitespace
+        preg_match_all('/(\d{4}-\d{2}-\d{2})/', $filter_date, $matches);
+        $dates = $matches[0] ?? [];
+
+        if (count($dates) > 0) {
+            $start_date = $dates[0];
+            $end_date = count($dates) > 1 ? $dates[1] : $start_date;
+            $date_params = [$start_date, $end_date];
+        } else {
+            // No valid dates found, disable filter
+            $filter_date = null;
+            $start_date = null;
+            $end_date = null;
+            $date_params = [];
+        }
+    }
+
+    // Helper for simple WHERE clauses
+    $simple_date_where = $filter_date ? "WHERE DATE(DATE_SUB(created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ?" : "";
+
     // Get newsletter subscribers
-    $subscribers = $pdo->query("SELECT * FROM subscribers ORDER BY created_at DESC")->fetchAll();
+    $sql = "SELECT * FROM subscribers $simple_date_where ORDER BY created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $subscribers = $stmt->fetchAll();
     
     // Get form submissions
-    $form_submissions = $pdo->query("SELECT * FROM form_submissions ORDER BY created_at DESC")->fetchAll();
+    $sql = "SELECT * FROM form_submissions $simple_date_where ORDER BY created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $form_submissions = $stmt->fetchAll();
     
     // Get traffic tracking data with UTM parameters
-    $traffic_data = $pdo->query("
+    $sql = "
         SELECT tt.*, o.order_number, o.total_amount, o.status as order_status,
                c.name as customer_name, c.email as customer_email,
                p.name as product_name
@@ -338,11 +371,15 @@ try {
         LEFT JOIN customers c ON tt.customer_id = c.id
         LEFT JOIN order_items oi ON o.id = oi.order_id
         LEFT JOIN products p ON oi.product_id = p.id
-        ORDER BY tt.created_at DESC
-    ")->fetchAll();
+    ";
+    if ($filter_date) $sql .= " WHERE DATE(DATE_SUB(tt.created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ? ";
+    $sql .= " ORDER BY tt.created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $traffic_data = $stmt->fetchAll();
     
     // Get UTM statistics
-    $utm_stats = $pdo->query("
+    $sql = "
         SELECT 
             utm_source,
             utm_medium,
@@ -351,13 +388,16 @@ try {
             COUNT(CASE WHEN order_id IS NOT NULL THEN 1 END) as conversions,
             ROUND(COUNT(CASE WHEN order_id IS NOT NULL THEN 1 END) * 100.0 / COUNT(DISTINCT user_fingerprint), 2) as conversion_rate
         FROM traffic_tracking
-        WHERE utm_source IS NOT NULL OR utm_medium IS NOT NULL OR utm_campaign IS NOT NULL
-        GROUP BY utm_source, utm_medium, utm_campaign
-        ORDER BY unique_visits DESC
-    ")->fetchAll();
+        WHERE (utm_source IS NOT NULL OR utm_medium IS NOT NULL OR utm_campaign IS NOT NULL)
+    ";
+    if ($filter_date) $sql .= " AND DATE(DATE_SUB(created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ? ";
+    $sql .= " GROUP BY utm_source, utm_medium, utm_campaign ORDER BY unique_visits DESC";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $utm_stats = $stmt->fetchAll();
     
     // Get products sold by traffic source
-    $products_by_source = $pdo->query("
+    $sql = "
         SELECT 
             COALESCE(tt.utm_source, 'Directo') as traffic_source,
             p.name as product_name,
@@ -369,42 +409,60 @@ try {
         JOIN products p ON oi.product_id = p.id
         LEFT JOIN traffic_tracking tt ON o.id = tt.order_id
         WHERE o.status = 'completed'
-        GROUP BY COALESCE(tt.utm_source, 'Directo'), p.name
-        ORDER BY total_revenue DESC
-    ")->fetchAll();
+    ";
+    if ($filter_date) $sql .= " AND DATE(DATE_SUB(o.created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ? ";
+    $sql .= " GROUP BY COALESCE(tt.utm_source, 'Directo'), p.name ORDER BY total_revenue DESC";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $products_by_source = $stmt->fetchAll();
     
     // Get customers
-    $customers = $pdo->query("SELECT * FROM customers ORDER BY created_at DESC")->fetchAll();
+    $sql = "SELECT * FROM customers $simple_date_where ORDER BY created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $customers = $stmt->fetchAll();
     
     // Get orders with customer details
-    $orders = $pdo->query("
+    $sql = "
         SELECT o.*, c.name as customer_name, c.email as customer_email, c.phone as customer_phone
         FROM orders o 
         JOIN customers c ON o.customer_id = c.id 
-        ORDER BY o.created_at DESC
-    ")->fetchAll();
+    ";
+    if ($filter_date) $sql .= " WHERE DATE(DATE_SUB(o.created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ? ";
+    $sql .= " ORDER BY o.created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $orders = $stmt->fetchAll();
     
     // Get payments
-    $payments = $pdo->query("
+    $sql = "
         SELECT p.*, o.order_number, c.name as customer_name, c.email as customer_email
         FROM payments p 
         JOIN orders o ON p.order_id = o.id 
         JOIN customers c ON o.customer_id = c.id 
-        ORDER BY p.created_at DESC
-    ")->fetchAll();
+    ";
+    if ($filter_date) $sql .= " WHERE DATE(DATE_SUB(p.created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ? ";
+    $sql .= " ORDER BY p.created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $payments = $stmt->fetchAll();
     
     // Get order items with product details
-    $order_items = $pdo->query("
+    $sql = "
         SELECT oi.*, o.order_number, p.name as product_name, c.name as customer_name
         FROM order_items oi 
         JOIN orders o ON oi.order_id = o.id 
         JOIN products p ON oi.product_id = p.id 
         JOIN customers c ON o.customer_id = c.id 
-        ORDER BY oi.created_at DESC
-    ")->fetchAll();
+    ";
+    if ($filter_date) $sql .= " WHERE DATE(DATE_SUB(oi.created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ? ";
+    $sql .= " ORDER BY oi.created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $order_items = $stmt->fetchAll();
     
     // Webinar registrations
-    $webinars = $pdo->query("
+    $sql = "
         SELECT
             nombre_completo,
             correo_electronico,
@@ -412,8 +470,12 @@ try {
             utm_source,
             created_at
         FROM webinar
-        ORDER BY created_at DESC
-    ")->fetchAll();
+    ";
+    if ($filter_date) $sql .= " WHERE DATE(DATE_SUB(created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ? ";
+    $sql .= " ORDER BY created_at DESC";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $webinars = $stmt->fetchAll();
 
     // Prepare data for charts
     $stateCounts = [];
@@ -439,16 +501,50 @@ try {
     arsort($sourceCounts);
     
     // Get statistics
-    $total_customers = $pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn();
-    $total_orders = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
-    $total_revenue = $pdo->query("SELECT SUM(total_amount) FROM orders WHERE status = 'completed'")->fetchColumn();
+    // Total Customers
+    $sql = "SELECT COUNT(*) FROM customers " . $simple_date_where;
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $total_customers = $stmt->fetchColumn();
+
+    // Total Orders
+    $sql = "SELECT COUNT(*) FROM orders " . $simple_date_where;
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $total_orders = $stmt->fetchColumn();
+
+    // Total Revenue
+    $sql = "SELECT SUM(total_amount) FROM orders WHERE status = 'completed'";
+    if ($filter_date) $sql .= " AND DATE(DATE_SUB(created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ?";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $total_revenue = $stmt->fetchColumn();
+
+    // Net Revenue
     $net_revenue = 0.0;
     foreach ($orders as $o) {
         $net_revenue += computeNetAmountForOrder($o);
     }
-    $total_subscribers = $pdo->query("SELECT COUNT(*) FROM subscribers")->fetchColumn();
-    $total_utm_visits = $pdo->query("SELECT COUNT(DISTINCT user_fingerprint) FROM traffic_tracking WHERE utm_source IS NOT NULL OR utm_medium IS NOT NULL OR utm_campaign IS NOT NULL")->fetchColumn();
-    $utm_conversions = $pdo->query("SELECT COUNT(DISTINCT tt.user_fingerprint) FROM traffic_tracking tt JOIN orders o ON tt.order_id = o.id WHERE (tt.utm_source IS NOT NULL OR tt.utm_medium IS NOT NULL OR tt.utm_campaign IS NOT NULL)")->fetchColumn();
+    
+    // Total Subscribers
+    $sql = "SELECT COUNT(*) FROM subscribers " . $simple_date_where;
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $total_subscribers = $stmt->fetchColumn();
+    
+    // Total UTM Visits
+    $sql = "SELECT COUNT(DISTINCT user_fingerprint) FROM traffic_tracking WHERE (utm_source IS NOT NULL OR utm_medium IS NOT NULL OR utm_campaign IS NOT NULL)";
+    if ($filter_date) $sql .= " AND DATE(DATE_SUB(created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ?";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $total_utm_visits = $stmt->fetchColumn();
+    
+    // UTM Conversions
+    $sql = "SELECT COUNT(DISTINCT tt.user_fingerprint) FROM traffic_tracking tt JOIN orders o ON tt.order_id = o.id WHERE (tt.utm_source IS NOT NULL OR tt.utm_medium IS NOT NULL OR tt.utm_campaign IS NOT NULL)";
+    if ($filter_date) $sql .= " AND DATE(DATE_SUB(o.created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ?";
+    $stmt = $pdo->prepare($sql);
+    if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
+    $utm_conversions = $stmt->fetchColumn();
     
 } catch (PDOException $e) {
     $error = 'Database error: ' . $e->getMessage();
@@ -465,6 +561,10 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
     <style>
         * {
             margin: 0;
@@ -814,6 +914,40 @@ try {
     </div>
 
     <div class="container">
+        <!-- Date Filter -->
+        <form method="GET" class="mb-4" id="filterForm">
+            <div style="max-width: 1200px; margin: 0 auto;">
+                <div class="row align-items-end justify-content-end" style="transform: translateX(15px);">
+                    <div class="col-auto">
+                        <label for="filter_date" class="form-label fw-bold">Filtrar por Fecha:</label>
+                        <input type="text" class="form-control" id="filter_date" name="filter_date" value="<?php echo htmlspecialchars($_GET['filter_date'] ?? ''); ?>" placeholder="Seleccionar fecha(s)">
+                    </div>
+                    <div class="col-auto">
+                        <?php if (isset($_GET['filter_date']) && $_GET['filter_date']): ?>
+                            <a href="dashboard.php" class="btn btn-secondary">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                flatpickr("#filter_date", {
+                    mode: "range",
+                    dateFormat: "Y-m-d",
+                    locale: "es",
+                    onClose: function(selectedDates, dateStr, instance) {
+                        if (dateStr) {
+                            document.getElementById('filterForm').submit();
+                        }
+                    }
+                });
+            });
+        </script>
+
         <!-- Statistics Cards -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -1079,7 +1213,7 @@ try {
                                     <span class="text-muted">N/A</span>
                                 <?php endif; ?>
                             </td>
-                            <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
+                            <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'] . ' -6 hours')); ?></td>
                             <td>
                                 <button class="btn btn-info btn-sm" onclick="viewOrderDetails(<?php echo $order['id']; ?>)">
                                     <i class="fas fa-eye"></i> Ver
@@ -1119,7 +1253,7 @@ try {
                                     <?php echo ucfirst($customer['status']); ?>
                                 </span>
                             </td>
-                            <td><?php echo date('d/m/Y H:i', strtotime($customer['created_at'])); ?></td>
+                            <td><?php echo date('d/m/Y H:i', strtotime($customer['created_at'] . ' -6 hours')); ?></td>
                             <td>
                                 <button class="btn btn-info btn-sm" onclick="viewCustomerDetails(<?php echo $customer['id']; ?>)">
                                     <i class="fas fa-eye"></i> Ver
@@ -1160,7 +1294,7 @@ try {
                                 </span>
                             </td>
                             <td><?php echo htmlspecialchars($payment['payment_method_type']); ?></td>
-                            <td><?php echo date('d/m/Y H:i', strtotime($payment['created_at'])); ?></td>
+                            <td><?php echo date('d/m/Y H:i', strtotime($payment['created_at'] . ' -6 hours')); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -1183,7 +1317,7 @@ try {
                             <tr>
                                 <td><?php echo htmlspecialchars($subscriber['id']); ?></td>
                                 <td><?php echo htmlspecialchars($subscriber['email']); ?></td>
-                                <td><?php echo htmlspecialchars($subscriber['created_at']); ?></td>
+                                <td><?php echo date('Y-m-d H:i:s', strtotime($subscriber['created_at'] . ' -6 hours')); ?></td>
                                 <td>
                                     <button class="btn btn-danger btn-sm delete-btn" data-type="subscriber" data-id="<?php echo htmlspecialchars($subscriber['id']); ?>">
                                     <i class="fas fa-trash"></i> Eliminar
@@ -1221,7 +1355,7 @@ try {
                             <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 <?php echo htmlspecialchars($submission['mensaje']); ?>
                             </td>
-                                <td><?php echo htmlspecialchars($submission['created_at']); ?></td>
+                                <td><?php echo date('Y-m-d H:i:s', strtotime($submission['created_at'] . ' -6 hours')); ?></td>
                                 <td>
                                     <button class="btn btn-danger btn-sm delete-btn" data-type="form" data-id="<?php echo htmlspecialchars($submission['id']); ?>">
                                     <i class="fas fa-trash"></i> Eliminar
@@ -1367,7 +1501,7 @@ try {
                                     <tbody>
                                         <?php foreach ($traffic_data as $traffic): ?>
                                         <tr>
-                                            <td><?php echo date('d/m/Y H:i', strtotime($traffic['created_at'])); ?></td>
+                                            <td><?php echo date('d/m/Y H:i', strtotime($traffic['created_at'] . ' -6 hours')); ?></td>
                                             <td>
                                                 <span class="badge bg-info">
                                                     <?php echo htmlspecialchars($traffic['utm_source'] ?: 'Directo'); ?>
@@ -1542,7 +1676,7 @@ try {
                                             ?>
                                             <td><?php echo htmlspecialchars($sourceLabel); ?></td>
                                             <td><?php echo htmlspecialchars($stateLabel); ?></td>
-                                            <td><small class="text-muted"><?php echo htmlspecialchars($w['created_at'] ?? ''); ?></small></td>
+                                            <td><small class="text-muted"><?php echo date('Y-m-d H:i:s', strtotime(($w['created_at'] ?? '') . ' -6 hours')); ?></small></td>
                                         </tr>
                                         <?php endforeach; ?>
                                     </tbody>
