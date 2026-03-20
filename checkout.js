@@ -116,8 +116,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('🚀 Inicializando Stripe...');
 
         try {
-            const stripeKey = 'pk_test_51RssEKDr6pwo00JYGrZoYOejqnTgUSWW2qkbjMXOImmjsEfrTaMSW7rSNoqjc5mBiLNnr27IY1FJwCNxHFnGPYc1001BfdumDI';
-            //const stripeKey = 'pk_live_51RssE8DvIWKIbYVCtdnm6z66g5Khu4UaaykVte3EO3yU8H51JQebti2OxWfPUbTzbIDMmw0bZKHweuLBKwPCgoVc00WNmoJ1T3';
+            //const stripeKey = 'pk_test_51RssEKDr6pwo00JYGrZoYOejqnTgUSWW2qkbjMXOImmjsEfrTaMSW7rSNoqjc5mBiLNnr27IY1FJwCNxHFnGPYc1001BfdumDI';
+            const stripeKey = 'pk_live_51RssE8DvIWKIbYVCtdnm6z66g5Khu4UaaykVte3EO3yU8H51JQebti2OxWfPUbTzbIDMmw0bZKHweuLBKwPCgoVc00WNmoJ1T3';
             console.log('🔑 Stripe Key:', stripeKey.substring(0, 20) + '...');
 
             stripe = Stripe(stripeKey);

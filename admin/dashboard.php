@@ -11,6 +11,13 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit;
 }
 
+// Webinar version selector logic
+if (isset($_GET['webinar_version'])) {
+    $_SESSION['webinar_version'] = ($_GET['webinar_version'] === 'v2') ? 'v2' : 'v1';
+}
+$webinar_version = $_SESSION['webinar_version'] ?? 'v1';
+$webinar_table = ($webinar_version === 'v2') ? 'webinarv2' : 'webinar';
+
 \Stripe\Stripe::setApiKey(STRIPE_SECRET_KEY);
 
 // ===== Banner Settings (create table, load, save) =====
@@ -213,7 +220,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'webinar') {
         $pdo = getDBConnection();
         $rows = $pdo->query("
             SELECT nombre_completo, correo_electronico, numero_telefono, utm_source, created_at
-            FROM webinar
+            FROM {$webinar_table}
             ORDER BY created_at DESC
         ")->fetchAll();
     } catch (PDOException $e) {
@@ -469,13 +476,39 @@ try {
             numero_telefono,
             utm_source,
             created_at
-        FROM webinar
+        FROM {$webinar_table}
     ";
     if ($filter_date) $sql .= " WHERE DATE(DATE_SUB(created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ? ";
     $sql .= " ORDER BY created_at DESC";
     $stmt = $pdo->prepare($sql);
     if ($filter_date) $stmt->execute($date_params); else $stmt->execute();
     $webinars = $stmt->fetchAll();
+
+    // Mundial - Crear tabla si no existe y obtener registros
+    $pdo->exec("CREATE TABLE IF NOT EXISTS registros (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(255) NOT NULL,
+        correo VARCHAR(255) NOT NULL,
+        telefono VARCHAR(10) NOT NULL,
+        fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_correo (correo)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    
+    $sql = "SELECT * FROM registros ORDER BY fecha_registro DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $registros_mundial = $stmt->fetchAll();
+
+    // Prepare data for Mundial chart (Registros por Estado)
+    $mundialStateCounts = [];
+    foreach ($registros_mundial as $r) {
+        $lada = webinarExtractLada($r['telefono'] ?? '');
+        $state = webinarMexicoStateFromLada($lada);
+        if ($state === '') $state = 'Sin Información';
+        if (!isset($mundialStateCounts[$state])) $mundialStateCounts[$state] = 0;
+        $mundialStateCounts[$state]++;
+    }
+    arsort($mundialStateCounts);
 
     // Prepare data for charts
     $stateCounts = [];
@@ -900,6 +933,50 @@ try {
                 gap: 1rem;
             }
         }
+
+        /* Webinar Version Selector - Minimalista */
+        .webinar-version-selector {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .webinar-version-btn {
+            border-radius: 20px;
+            padding: 0.375rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid #dee2e6;
+            background-color: #fff;
+            color: #6c757d;
+            transition: all 0.2s ease;
+        }
+
+        .webinar-version-btn:hover {
+            border-color: #adb5bd;
+            background-color: #f8f9fa;
+        }
+
+        .webinar-version-btn:focus {
+            box-shadow: none;
+            border-color: #222F58;
+        }
+
+        .webinar-version-btn .fa-database {
+            margin-right: 0.4rem;
+        }
+
+        .webinar-version-btn .version-text {
+            color: #495057;
+        }
+
+        @media (max-width: 768px) {
+            .webinar-version-selector {
+                position: static;
+                margin-top: 1rem;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1045,6 +1122,11 @@ try {
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="manual-email-tab" data-bs-toggle="tab" data-bs-target="#manual-email" type="button">
                     <i class="fas fa-paper-plane"></i> Envíos Manuales
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="mundial-tab" data-bs-toggle="tab" data-bs-target="#mundial" type="button">
+                    <i class="fas fa-globe"></i> Mundial
                 </button>
             </li>
         </ul>
@@ -1607,9 +1689,31 @@ try {
             <!-- Webinar Tab -->
             <div class="tab-pane fade" id="webinar">
                 <div class="text-center">
-                    <div class="mb-4">
+                    <div class="mb-4 position-relative">
                         <h4><i class="fas fa-video"></i> Webinar</h4>
                         <p class="text-muted">Gestión básica de webinars y enlaces de transmisión.</p>
+                        
+                        <!-- Version Selector - Arriba a la derecha -->
+                        <div class="webinar-version-selector">
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle webinar-version-btn" type="button" id="webinarVersionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-database"></i>
+                                    <span class="version-text"><?php echo $webinar_version === 'v1' ? 'Versión 1' : 'Versión 2'; ?></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="webinarVersionDropdown">
+                                    <li>
+                                        <a class="dropdown-item <?php echo $webinar_version === 'v1' ? 'active' : ''; ?>" href="?<?php echo http_build_query(array_merge($_GET, ['webinar_version' => 'v1'])); ?>#webinar-tab">
+                                            <i class="fas fa-database text-primary"></i> Versión 1
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item <?php echo $webinar_version === 'v2' ? 'active' : ''; ?>" href="?<?php echo http_build_query(array_merge($_GET, ['webinar_version' => 'v2'])); ?>#webinar-tab">
+                                            <i class="fas fa-database text-success"></i> Versión 2
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Charts Row -->
@@ -1643,7 +1747,7 @@ try {
                                 <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#webinarLinksModal">
                                     <i class="fas fa-link"></i> Links
                                 </button>
-                                <a href="dashboard.php?export=webinar" class="btn btn-success btn-sm">
+                                <a href="dashboard.php?export=webinar&webinar_version=<?php echo $webinar_version; ?>#webinar-tab" class="btn btn-success btn-sm">
                                     <i class="fas fa-file-excel"></i> Descargar Excel
                                 </a>
                             </div>
@@ -1682,6 +1786,77 @@ try {
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mundial Tab -->
+            <div class="tab-pane fade" id="mundial">
+                <div class="text-center">
+                    <!-- Gráfica de Registros por Estado -->
+                    <?php if (!empty($registros_mundial)): ?>
+                    <div class="row mb-4 text-start">
+                        <div class="col-md-6 mx-auto">
+                            <div class="card h-100">
+                                <div class="card-header bg-white">
+                                    <h5 class="card-title mb-0 text-primary"><i class="fas fa-map-marker-alt"></i> Registros por Estado</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="mundialStateChart" style="max-height: 300px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title"><i class="fas fa-list"></i> Lista de Registros</h5>
+                            <a href="mundial_export.php" class="btn btn-success btn-sm">
+                                <i class="fas fa-file-excel"></i> Descargar Excel
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <?php if (empty($registros_mundial)): ?>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No hay registros aún</h5>
+                                    <p class="text-muted">Los registros aparecerán aquí cuando se agreguen a la base de datos.</p>
+                                </div>
+                            <?php else: ?>
+                            <div class="table-responsive">
+                                <table id="mundialTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nombre</th>
+                                            <th>Correo Electrónico</th>
+                                            <th>Teléfono</th>
+                                            <th>Estado</th>
+                                            <th>Fecha de Registro</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($registros_mundial as $r): ?>
+                                        <?php
+                                            $lada = webinarExtractLada($r['telefono'] ?? '');
+                                            $estado = webinarMexicoStateFromLada($lada);
+                                            $estadoLabel = $estado === '' ? 'Sin Información' : $estado;
+                                        ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($r['id']); ?></td>
+                                            <td><strong><?php echo htmlspecialchars($r['nombre']); ?></strong></td>
+                                            <td><?php echo htmlspecialchars($r['correo']); ?></td>
+                                            <td><?php echo htmlspecialchars($r['telefono'] ?? ''); ?></td>
+                                            <td><?php echo htmlspecialchars($estadoLabel); ?></td>
+                                            <td><?php echo date('d/m/Y H:i', strtotime($r['fecha_registro'])); ?></td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -1942,9 +2117,46 @@ try {
         // Charts Data
         const stateData = <?php echo json_encode($stateCounts); ?>;
         const sourceData = <?php echo json_encode($sourceCounts); ?>;
+        const mundialStateData = <?php echo json_encode($mundialStateCounts); ?>;
 
         // Render Charts when document is ready
         document.addEventListener('DOMContentLoaded', function() {
+            // Mundial State Chart
+            const mundialStateChartEl = document.getElementById('mundialStateChart');
+            if (mundialStateChartEl) {
+                const mundialStateCtx = mundialStateChartEl.getContext('2d');
+                new Chart(mundialStateCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(mundialStateData),
+                        datasets: [{
+                            label: 'Registros',
+                            data: Object.values(mundialStateData),
+                            backgroundColor: '#222F58',
+                            borderColor: '#222F58',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
             // State Chart
             const stateCtx = document.getElementById('stateChart').getContext('2d');
             new Chart(stateCtx, {
@@ -2012,6 +2224,18 @@ try {
             });
         });
 
+        // Mantener pestaña activa según el hash de la URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const hash = window.location.hash;
+            if (hash === '#webinar-tab') {
+                const webinarTab = document.querySelector('#webinar-tab');
+                if (webinarTab) {
+                    const tab = new bootstrap.Tab(webinarTab);
+                    tab.show();
+                }
+            }
+        });
+
         $(document).ready(function() {
             // Initialize DataTables
             $('#ordersTable').DataTable({
@@ -2056,6 +2280,14 @@ try {
             });
             $('#webinarTable').DataTable({
                 order: [[5, 'desc']],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
+                },
+                pageLength: 10,
+                responsive: true
+            });
+            $('#mundialTable').DataTable({
+                order: [[0, 'desc']],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
                 },
