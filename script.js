@@ -641,30 +641,30 @@ document.addEventListener('DOMContentLoaded', function () {
                     <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">1</span>
                     <span style="color: #333; font-weight: 500;">Lo que nadie te dijo de invertir</span>
                 </div>
-                
+
                 <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
                     <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">2</span>
-                    <span style="color: #333; font-weight: 500;">El precio del éxito</span>
-                </div>
-                
-                <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
-                    <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">3</span>
                     <span style="color: #333; font-weight: 500;">El método para eliminar tus deudas</span>
                 </div>
-                
+
                 <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
-                    <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">4</span>
+                    <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">3</span>
                     <span style="color: #333; font-weight: 500;">La ley de atracción del dinero</span>
                 </div>
-                
+
                 <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
-                    <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">5</span>
+                    <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">4</span>
                     <span style="color: #333; font-weight: 500;">Dirige tu dinero como un capitán</span>
                 </div>
-                
+
+                <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
+                    <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">5</span>
+                    <span style="color: #333; font-weight: 500;">Mi debut como inversionista - Bolsa de Valores</span>
+                </div>
+
                 <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 0.8rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1A237E;">
                     <span style="background: #1A237E; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-weight: bold;">6</span>
-                    <span style="color: #333; font-weight: 500;">Mi debut como inversionista</span>
+                    <span style="color: #333; font-weight: 500;">Mi debut como inversionista - (Preparación para Invertir y Real Estate)</span>
                 </div>
             </div>
 

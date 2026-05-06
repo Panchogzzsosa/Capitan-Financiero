@@ -9,7 +9,7 @@ try {
         CREATE TABLE IF NOT EXISTS site_settings (
             id INT PRIMARY KEY AUTO_INCREMENT,
             banner_enabled TINYINT(1) NOT NULL DEFAULT 1,
-            banner_text VARCHAR(255) NOT NULL DEFAULT 'CODIGO DE DESCUENTO : CAPITAN01',
+            banner_text VARCHAR(255) NOT NULL DEFAULT 'CODIGO DE DESCUENTO : CFMUNDIAL2026',
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
     ");
@@ -30,4 +30,6 @@ try {
         'enabled' => true,
         'text' => 'CODIGO DE DESCUENTO : CAPITAN01'
     ]);
+}
+;
 }

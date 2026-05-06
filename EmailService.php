@@ -109,11 +109,11 @@ class EmailService {
                         <p>Prepárate para transformar tus finanzas con este temario:</p>
                         <ol>
                             <li>Lo que nadie te dijo de invertir</li>
-                            <li>El precio del éxito</li>
                             <li>El método para eliminar tus deudas</li>
                             <li>La ley de atracción del dinero</li>
                             <li>Dirige tu dinero como un capitán</li>
-                            <li>Mi debut como inversionista</li>
+                            <li>Mi debut como inversionista - Bolsa de Valores</li>
+                            <li>Mi debut como inversionista - (Preparación para Invertir y Real Estate)</li>
                         </ol>
                     </div>
 
@@ -121,13 +121,12 @@ class EmailService {
                         <h3>🗓 Calendario de Sesiones</h3>
                         <p>Todas las sesiones son a las <strong>7:00 PM (Hora Centro de México)</strong>:</p>
                         <ul>
-                            <li>Martes 13 Ene: Lo que nadie te dijo de invertir 🤫</li>
-                            <li>Jueves 16 Ene: El precio del éxito 🏆</li>
-                            <li>Martes 20 Ene: El método para eliminar tus deudas ✂️</li>
-                            <li>Miércoles 21 Ene: Bono especial - Renunciar para emprender 🚀</li>
-                            <li>Jueves 22 Ene: La ley de atracción del dinero 🧲</li>
-                            <li>Martes 27 Ene: Dirige tu dinero como un capitán 🧭</li>
-                            <li>Jueves 29 Ene: Mi debut como inversionista 🌱</li>
+                            <li>Martes 12 May: Lo que nadie te dijo de invertir 🤫</li>
+                            <li>Jueves 14 May: El método para eliminar tus deudas ✂️</li>
+                            <li>Martes 19 May: La ley de atracción del dinero 🧲</li>
+                            <li>Jueves 21 May: Dirige tu dinero como un capitán 🧭</li>
+                            <li>Martes 26 May: Mi debut como inversionista - Bolsa de Valores 📈</li>
+                            <li>Jueves 28 May: Mi debut como inversionista - (Preparación para Invertir y Real Estate) 🏢</li>
                         </ul>
                     </div>
 
@@ -161,13 +160,12 @@ class EmailService {
                "Zoom: https://us02web.zoom.us/j/5710327674?pwd=aBW3Yje8SyHSxvXHYHD3kxUWnBmf3O.1\n" .
                "WhatsApp: https://chat.whatsapp.com/K1HxI15YqbbJz8yb9uKEKe\n\n" .
                "Calendario (7:00 PM CDMX):\n" .
-               "- 13 Ene: Lo que nadie te dijo de invertir\n" .
-               "- 16 Ene: El precio del éxito\n" .
-               "- 20 Ene: Eliminar deudas\n" .
-               "- 21 Ene: Bono Emprender\n" .
-               "- 22 Ene: Ley de atracción\n" .
-               "- 27 Ene: Dirige tu dinero\n" .
-               "- 29 Ene: Mi debut inversionista\n\n" .
+               "- 12 May: Lo que nadie te dijo de invertir\n" .
+               "- 14 May: El método para eliminar tus deudas\n" .
+               "- 19 May: La ley de atracción del dinero\n" .
+               "- 21 May: Dirige tu dinero como un capitán\n" .
+               "- 26 May: Mi debut como inversionista - Bolsa de Valores\n" .
+               "- 28 May: Mi debut como inversionista - (Preparación para Invertir y Real Estate)\n\n" .
                "Capitán Financiero";
     }
 }

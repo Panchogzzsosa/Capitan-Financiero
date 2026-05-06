@@ -107,8 +107,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Códigos de descuento válidos (descuento en pesos)
     const validDiscountCodes = {
-        'CAPITAN01': 2751,
-        'MONEI26': 3151
+        'CFMUNDIAL2026': 3151,
+        'CFMUNDIAL': 2751
     };
 
     // Inicializar Stripe

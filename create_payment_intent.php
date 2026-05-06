@@ -15,8 +15,8 @@ const BASE_PRICE_CENTS = 465000; // $4,650.00 MXN
 
 // Mapa de descuentos: Código => Monto a descontar en centavos
 const VALID_DISCOUNTS = [
-    'CAPITAN01' => 275100, // Descuento de $2,751.00 -> Final: $1,899.00
-    'MONEI26'   => 315100  // Descuento de $3,151.00 -> Final: $1,499.00
+    'CFMUNDIAL2026' => 315100, // Descuento de $3,151.00 -> Final: $1,499.00
+    'CFMUNDIAL'     => 275100  // Descuento de $2,751.00 -> Final: $1,899.00
 ];
 
 try {
