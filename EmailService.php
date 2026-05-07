@@ -136,7 +136,7 @@ class EmailService {
                         <center>
                             <a href="https://us02web.zoom.us/j/5710327674?pwd=aBW3Yje8SyHSxvXHYHD3kxUWnBmf3O.1" class="btn">💻 Entrar al ZOOM</a>
                             <br>
-                            <a href="https://chat.whatsapp.com/K1HxI15YqbbJz8yb9uKEKe" class="btn btn-whatsapp">📱 Unirme al Grupo WhatsApp</a>
+                            <a href="https://chat.whatsapp.com/BOYh3lATxt7JvIx3mkejjS" class="btn btn-whatsapp">📱 Unirme al Grupo WhatsApp</a>
                         </center>
                     </div>
                 </div>
@@ -158,7 +158,7 @@ class EmailService {
                "Total: $" . ($orderData['total_amount'] ?? '') . "\n\n" .
                "ACCESOS DIRECTOS:\n" .
                "Zoom: https://us02web.zoom.us/j/5710327674?pwd=aBW3Yje8SyHSxvXHYHD3kxUWnBmf3O.1\n" .
-               "WhatsApp: https://chat.whatsapp.com/K1HxI15YqbbJz8yb9uKEKe\n\n" .
+               "WhatsApp: https://chat.whatsapp.com/BOYh3lATxt7JvIx3mkejjS\n\n" .
                "Calendario (7:00 PM CDMX):\n" .
                "- 12 May: Lo que nadie te dijo de invertir\n" .
                "- 14 May: El método para eliminar tus deudas\n" .
